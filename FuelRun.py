@@ -131,7 +131,7 @@ def LevelSelect():
         screen.blit(HardTextSurf, HardTextRect)
             
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
         
         
 def GameOver(score):
@@ -210,7 +210,7 @@ def GameOver(score):
         planedown = pygame.transform.rotate(pointer, rotate)
         screen.blit(planedown, (300, 360))
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
 
 def MainMenu():
     Menu = True
@@ -302,7 +302,7 @@ def MainMenu():
         plane(x, y)
         
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
         
 def unpause():
     global pause
@@ -347,7 +347,7 @@ def paused():
         screen.blit(Quitbutton, (560, 535))
         
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
         
 def text_objects(text, font):
     textSurface = font.render(text, True, i_red)
@@ -418,9 +418,9 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
     x, y = 75, 333
-    x_change, y_change = 0, 0
+    x_change, y_change = 30, 30
     
-    fuel_speed = -5
+    fuel_speed = -10
     score = 0
     
     cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
@@ -534,7 +534,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         click = pygame.mouse.get_pressed()
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
 
 MainMenu()
 
