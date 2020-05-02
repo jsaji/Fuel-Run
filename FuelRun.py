@@ -1,4 +1,7 @@
-import pygame, time, sys, random
+import pygame
+import time
+import sys
+import random
 
 pygame.init()
 pygame.font.init()
@@ -30,19 +33,20 @@ button_sound = pygame.mixer.Sound("Resources/Sound/ButtonPress.wav")
 gameover_sound = pygame.mixer.Sound("Resources/Sound/GameOver.wav")
 
 pause = False
-lvldiff, highscore = 0, 0
+highscore = 0
 
 pointerChoice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
 pointer = pygame.image.load("Resources/Images/"+pointerChoice[random.randint(0, 7)]+"Plane.png")
 
 def LevelSelect():
-    global lvldiff
-    
     easy, medium, hard = 6, 12, 16
     easyspeed, mediumspeed, hardspeed = 1.01, 1.02, 1.03
     easyscore, mediumscore, hardscore = 5, 10, 15
     easylives, mediumlives, hardlives = 3, 4, 5
-    
+    #easy = {6, 1.01, 5, 3}
+    #medium = {12, 1.02, 10, 4}
+    #hard = {16, 1.03, 15, 5}
+
     cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
     cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
     cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
@@ -51,7 +55,24 @@ def LevelSelect():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
+                    pygame.mixer.Sound.play(button_sound)
+                    return
+                if 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
+                    pygame.mixer.Sound.play(button_sound)
+                    while (keepGoing):
+                        keepGoing = game_loop(easy, easyspeed, easyscore, easylives)
+                if 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
+                    pygame.mixer.Sound.play(button_sound)
+                    while (keepGoing):
+                        keepGoing = game_loop(medium, mediumspeed, mediumscore, mediumlives)
+                if 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
+                    pygame.mixer.Sound.play(button_sound)
+                    while (keepGoing):
+                        keepGoing = game_loop(hard, hardspeed, hardscore, hardlives)
                 
         screen.fill(s_blue)
         
@@ -70,57 +91,43 @@ def LevelSelect():
         buttontext = pygame.font.Font("Resources/BULKYPIX.ttf", 40)
         diffchoose = pygame.font.Font("Resources/BULKYPIX.ttf", 50)
         DiffTextSurf, DiffTextRect = text_objects("Choose difficulty:", diffchoose)
-        DiffTextRect.center = ((display_width/2),(display_height/4.5))
+        DiffTextRect.center = (int(display_width/2), int(display_height/4.5))
         screen.blit(DiffTextSurf, DiffTextRect)
         
         mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-        
-        if 515 + 250 > mouse[0] > 515 and 250 + 80 > mouse[1] > 250:
-            pygame.draw.rect(screen, buttonover_green, (515, 250, 250, 80))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                lvldiff = 0
-                game_loop(easy, easyspeed, easyscore, easylives)
-        else:
-            pygame.draw.rect(screen, button_green, (515, 250, 250, 80))
-        EasyTextSurf, EasyTextRect = levelselect_text("Easy", buttontext)
-        EasyTextRect.center = ((display_width/2), 290)
-        screen.blit(EasyTextSurf, EasyTextRect)
+        keepGoing = True
 
-        if 40 + 160 > mouse[0] > 40 and 40 + 60 > mouse[1] > 40:
+        if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
             pygame.draw.rect(screen, csi_blue, (40, 40, 160, 60))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                MainMenu()
         else:
             pygame.draw.rect(screen, button_red, (40, 40, 160, 60))
         hometext = pygame.font.Font("Resources/BULKYPIX.ttf", 30)
         Homebutton = hometext.render("Home", True, a_blue)
         screen.blit(Homebutton, (65, 60))
         
-        if 515 + 250 > mouse[0] > 515 and 400 + 80 > mouse[1] > 400:
+        if 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
+            pygame.draw.rect(screen, buttonover_green, (515, 250, 250, 80))
+        else:
+            pygame.draw.rect(screen, button_green, (515, 250, 250, 80))
+        EasyTextSurf, EasyTextRect = levelselect_text("Easy", buttontext)
+        EasyTextRect.center = (int(display_width/2), 290)
+        screen.blit(EasyTextSurf, EasyTextRect)
+
+        if 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
             pygame.draw.rect(screen, buttonover_yellow, (515, 400, 250, 80))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                lvldiff = 1
-                game_loop(medium, mediumspeed, mediumscore, mediumlives)
         else:
             pygame.draw.rect(screen, button_yellow, (515, 400, 250, 80))
         MediumTextSurf, MediumTextRect = levelselect_text("Medium", buttontext)
-        MediumTextRect.center = ((display_width/2), 440)
+        MediumTextRect.center = (int(display_width/2), 440)
         screen.blit(MediumTextSurf, MediumTextRect)
         
-        if 515 + 250 > mouse[0] > 515 and 550 + 80 > mouse[1] > 550:
+        if 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
             pygame.draw.rect(screen, buttonover_red, (515, 550, 250, 80))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                lvldiff = 2
-                game_loop(hard, hardspeed, hardscore, hardlives)
         else:
             pygame.draw.rect(screen, button_red, (515, 550, 250, 80))
+
         HardTextSurf, HardTextRect = levelselect_text("Hard", buttontext)
-        HardTextRect.center = ((display_width/2), 590)
+        HardTextRect.center = (int(display_width/2), 590)
         screen.blit(HardTextSurf, HardTextRect)
             
         pygame.display.update()
@@ -129,7 +136,6 @@ def LevelSelect():
         
 def GameOver(score):
     global highscore
-    global lvldiff
     pygame.mixer.Sound.play(gameover_sound)
     
     easy, medium, hard, extreme = 4, 8, 12, 16
@@ -151,6 +157,14 @@ def GameOver(score):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
+                    pygame.mixer.Sound.play(button_sound)
+                    return True
+                if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
+                    pygame.mixer.Sound.play(button_sound)
+                    return False
         
         screen.fill(s_blue)
         
@@ -169,47 +183,28 @@ def GameOver(score):
         if highscore > score:
             highscore = score
             HighScoreTextSurf, HighScoreTextRect = text_objects("New Highscore: "+str(highscore)+"!", scorefont)
-            HighScoreTextRect.center = ((display_width/2),(display_height/4.5))
+            HighScoreTextRect.center = (int(display_width/2),int(display_height/4.5))
             screen.blit(HighScoreTextSurf, HighScoreTextRect)
         else:
             ScoreTextSurf, ScoreTextRect = text_objects("Score: "+str(score)+"!", scorefont)
-            ScoreTextRect.center = ((display_width/2),(display_height/4.5))
+            ScoreTextRect.center = (int(display_width/2),int(display_height/4.5))
             screen.blit(ScoreTextSurf, ScoreTextRect)
         
         mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
 
-        if 520 + 240 > mouse[0] > 520 and 310 + 120 > mouse[1] > 310:
+        if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
             pygame.draw.rect(screen, buttonover_green, (520, 310, 240, 120))
-            pygame.draw.polygon(screen, white, ((610,330), (610, 410), (690,370)))
-            if click[0] == 1:
-                if lvldiff == 0:
-                    pygame.mixer.Sound.play(button_sound)
-                    game_loop(easy, easyspeed, easyscore, easylives)
-                elif lvldiff == 1:
-                    game_loop(medium, mediumspeed, mediumscore, mediumlives)
-                elif lvldiff == 2:
-                    game_loop(hard, hardspeed, hardscore, hardlives)
-                elif lvldiff == 3:
-                    game_loop(extreme, extremespeed, extremescore, extremelives)
         else:
             pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
-            pygame.draw.polygon(screen, white, ((610,330), (610, 410), (690,370)))
+        pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
-
-        if 540 + 200 > mouse[0] > 540 and 500 + 100 > mouse[1] > 500:
+        if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                MainMenu()
-##                pygame.mixer.Sound.play(button_sound)
-##                pygame.quit()
-##                quit()
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
         quittext = pygame.font.Font("Resources/BULKYPIX.ttf", 45)
-        Quitbutton = quittext.render("Home", True, a_blue)
-        screen.blit(Quitbutton, (560, 535))
+        Quitbutton = quittext.render("Back", True, a_blue)
+        screen.blit(Quitbutton, (570, 535))
         
         rotate += rotation
         planedown = pygame.transform.rotate(pointer, rotate)
@@ -248,6 +243,11 @@ def MainMenu():
                     x_change = 0
                 if event.key == pygame.K_DOWN or event.key == pygame.K_UP:
                     y_change = 0
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
+                    pygame.mixer.Sound.play(button_sound)
+                    LevelSelect()
 
         x += x_change
         y += y_change
@@ -276,21 +276,15 @@ def MainMenu():
 
         message = pygame.font.Font("Resources/BULKYPIX.ttf", 175)
         TextSurf, TextRect = text_objects("Fuel Run", message)
-        TextRect.center = ((display_width/2), int(display_height/4.5))
+        TextRect.center = (int(display_width/2), int(display_height/4.5))
         screen.blit(TextSurf, TextRect)
         
         mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-
-        if 520 + 240 > mouse[0] > 520 and 310 + 120 > mouse[1] > 310:
+        if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
             pygame.draw.rect(screen, buttonover_green, (520, 310, 240, 120))
-            pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                LevelSelect()
         else:
             pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
-            pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
+        pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
 ##        if 540 + 200 > mouse[0] > 540 and 500 + 100 > mouse[1] > 500:
 ##            pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
@@ -320,32 +314,34 @@ def paused():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                if (520 + 240 > mouse[0] and mouse[0] > 520) and (310 + 120 > mouse[1] and mouse[1] > 310):
+                    pygame.mixer.Sound.play(button_sound)
+                    unpause()
+                if (540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500):
+                    pygame.mixer.Sound.play(button_sound)
+                    MainMenu()
+
         screen.fill(purple)
         message = pygame.font.Font("Resources/BULKYPIX.ttf", 115)
         TextSurf, TextRect = paused_text("Paused", message)
-        TextRect.center = ((display_width/2), (display_height/3))
+        TextRect.center = (int(display_width/2), int(display_height/3))
         screen.blit(TextSurf, TextRect)
         
         mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
         
         if (520 + 240 > mouse[0] and mouse[0] > 520) and (310 + 120 > mouse[1] and mouse[1] > 310):
             pygame.draw.rect(screen, buttonover_green, (520, 310, 240, 120))
-            pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                unpause()
         else:
             pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
-            pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
+        pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
-        if 540 + 200 > mouse[0] > 540 and 500 + 100 > mouse[1] > 500:
+        if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
-            if click[0] == 1:
-                pygame.mixer.Sound.play(button_sound)
-                MainMenu()
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
+
         buttontext = pygame.font.Font("Resources/BULKYPIX.ttf", 45)
         Quitbutton = buttontext.render("Home", True, a_blue)
         screen.blit(Quitbutton, (560, 535))
@@ -402,10 +398,10 @@ def generateNumbers(difficulty):
     return num1, num2, wrong1, wrong2
 
 def fuelBox(number, fuel_startx, fuel_starty, color):
-    pygame.draw.rect(screen, color, [fuel_startx, fuel_starty, 100, 100])
+    pygame.draw.rect(screen, color, [int(fuel_startx), int(fuel_starty), 100, 100])
     boxtext = pygame.font.Font("Resources/BULKYPIX.ttf", 35)
     TextSurf, TextRect = box_text(str(number), boxtext)
-    TextRect.center = ((fuel_startx + 55), (fuel_starty + 55))
+    TextRect.center = (int(fuel_startx + 55), int(fuel_starty + 55))
     screen.blit(TextSurf, TextRect)
 
 def cloud(cloud_x, cloud_y):
@@ -497,12 +493,12 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         fuel_startx2 += fuel_speed
         fuel_startx3 += fuel_speed
             
-        if   ((fuel_startx1 - 110 <= x and x <= fuel_startx1 + 110) and (fuel_starty1 - 54 <= y and y <= fuel_starty1 + 54)):
+        if   ((fuel_startx1 - 110 <= x and x <= fuel_startx1 + 110) and (fuel_starty1 - 50 <= y and y <= fuel_starty1 + 100)):
             #if (fuel_starty1 <= y and y <= fuel_starty1 + 100) or (fuel_starty1 <= y + 50 and y + 50 <= fuel_starty1 + 100):
             hit = 0
-        elif ((fuel_startx2 - 110 <= x and x <= fuel_startx2 + 110) and (fuel_starty2 - 54 <= y and y <= fuel_starty2 + 54)):
+        elif ((fuel_startx2 - 110 <= x and x <= fuel_startx2 + 110) and (fuel_starty2 - 50 <= y and y <= fuel_starty2 + 100)):
             hit = 1
-        elif ((fuel_startx3 - 110 <= x and x <= fuel_startx3 + 110) and (fuel_starty3 - 54 <= y and y <= fuel_starty3 + 54)):
+        elif ((fuel_startx3 - 110 <= x and x <= fuel_startx3 + 110) and (fuel_starty3 - 50 <= y and y <= fuel_starty3 + 100)):
             hit = 2
         else:
             hit = -1
@@ -525,7 +521,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     trigger = False
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
-                    GameOver(score)
+                    return GameOver(score)
             
             #if fuel_startx1 <= x <= (fuel_startx1 + 100) or fuel_startx1 < x + 110 < fuel_startx1 + 100:
              #   if fuel_starty1 <= y <= (fuel_starty1 + 100) or fuel_starty1 <= y + 50 <= fuel_starty1 + 100:
@@ -543,4 +539,4 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
 MainMenu()
 
 pygame.quit()
-quit()
+sys.exit()
