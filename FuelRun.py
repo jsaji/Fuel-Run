@@ -54,8 +54,8 @@ def LevelSelect():
     easylives, mediumlives, hardlives = 3, 4, 5
     
     cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
-    cloud_starty1, cloud_starty2, cloud_starty3 = random.randrange(5, 210), random.randrange(240, 440), random.randrange(470, 670)
-    cloud_speed1, cloud_speed2, cloud_speed3 = random.randrange(-15, -10), random.randrange(-15, -10), random.randrange(-15, -10)
+    cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
+    cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
 
     while True:
         for event in pygame.event.get():
@@ -87,9 +87,9 @@ def LevelSelect():
         if cloud_startx1 < -400:
             cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(1290, 1345), random.randint(5, 210), random.randint(-15, -10)
         if cloud_startx2 < -400:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randrange(1290, 1345), random.randrange(240, 440), random.randrange(-15, -10)
+            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(1290, 1345), random.randint(240, 440), random.randint(-15, -10)
         if cloud_startx3 < -400:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randrange(1290, 1345), random.randrange(470, 670), random.randrange(-15, -10)
+            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(1290, 1345), random.randint(470, 670), random.randint(-15, -10)
 
         buttontext = pygame.font.Font("Resources/BULKYPIX.ttf", 40)
         diffchoose = pygame.font.Font("Resources/BULKYPIX.ttf", 50)
@@ -191,7 +191,7 @@ def GameOver(score):
         if cloud_starty3 < -100:
             cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(700, 1000), random.randint(750, 800), random.randint(-20, -15)
         
-        if highscore <= score:
+        if highscore > score:
             highscore = score
             HighScoreTextSurf, HighScoreTextRect = text_objects("New Highscore: "+str(highscore)+"!", scorefont)
             HighScoreTextRect.center = ((display_width/2),(display_height/4.5))
@@ -252,8 +252,8 @@ def MainMenu():
     x_change, y_change = 0, 0
     
     cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
-    cloud_starty1, cloud_starty2, cloud_starty3 = random.randrange(5, 210), random.randrange(240, 440), random.randrange(470, 670)
-    cloud_speed1, cloud_speed2, cloud_speed3 = random.randrange(-15, -10), random.randrange(-15, -10), random.randrange(-15, -10)
+    cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
+    cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
     x, y = 125, 333
     
     while Menu:
@@ -297,9 +297,9 @@ def MainMenu():
         if cloud_startx1 < -400:
             cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(1290, 1345), random.randint(5, 210), random.randint(-15, -10)
         if cloud_startx2 < -400:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randrange(1290, 1345), random.randrange(240, 440), random.randrange(-15, -10)
+            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(1290, 1345), random.randint(240, 440), random.randint(-15, -10)
         if cloud_startx3 < -400:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randrange(1290, 1345), random.randrange(470, 670), random.randrange(-15, -10)
+            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(1290, 1345), random.randint(470, 670), random.randint(-15, -10)
 
         message = pygame.font.Font("Resources/BULKYPIX.ttf", 175)
         TextSurf, TextRect = text_objects("Fuel Run", message)
@@ -414,24 +414,22 @@ def Question(number1, number2):
     ingame = pygame.font.Font("Resources/BULKYPIX.ttf", 80)
     Line = ingame.render(str(number1)+" x "+str(number2)+" = ?", True, i_red)
     screen.blit(Line, (400, 50))
-def Answer(number1, number2, fuel_startx, fuel_starty):
+
+def generateAnswerBox(number, fuel_startx, fuel_starty):
     boxtext = pygame.font.Font("Resources/BULKYPIX.ttf", 35)
-    answer = number1*number2
-    TextSurf, TextRect = box_text(str(answer), boxtext)
+    TextSurf, TextRect = box_text(str(number), boxtext)
     TextRect.center = ((fuel_startx + 55), (fuel_starty + 55))
     screen.blit(TextSurf, TextRect)
-def GenWrong1(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx, fuel_starty, number1, number2):
-    boxtext = pygame.font.Font("Resources/BULKYPIX.ttf", 35)
-    WrongAnswer1 = RandNumber1*RandNumber2
-    TextSurf, TextRect = box_text(str(WrongAnswer1), boxtext)
-    TextRect.center = ((fuel_startx + 55), (fuel_starty + 55))
-    screen.blit(TextSurf, TextRect)
-def GenWrong2(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx, fuel_starty, number1, number2):
-    boxtext = pygame.font.Font("Resources/BULKYPIX.ttf", 35)
-    WrongAnswer2 = RandNumber3*RandNumber4
-    TextSurf, TextRect = box_text(str(WrongAnswer2), boxtext)
-    TextRect.center = ((fuel_startx + 55), (fuel_starty + 55))
-    screen.blit(TextSurf, TextRect)
+
+def generateNumbers(difficulty):
+    num1, num2 = random.randint(1, difficulty), random.randint(1, difficulty)
+    answer = num1 * num2
+    wrong1, wrong2 = answer, answer
+    while (wrong1 == answer):
+        wrong1 = abs(num1 + random.randint(1, 2)) * abs(num2 - random.randint(1, 2))
+    while (wrong2 == answer or wrong2 == wrong1):
+        wrong2 = abs(num1 + random.randint(2, 3)) * abs(num2 - random.randint(1, 2))
+    return num1, num2, wrong1, wrong2
 
 def fuelBox(fuel_x, fuel_y, color):
     pygame.draw.rect(screen, color, [fuel_x, fuel_y, 100, 100])
@@ -452,7 +450,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     x, y = 75, 333
     x_change, y_change = 0, 0
     
-    fuel_speed = -5    
+    fuel_speed = -5
     score = 0
     
     if score == 0:
@@ -460,27 +458,12 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
         
         cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
-        cloud_starty1, cloud_starty2, cloud_starty3 = random.randrange(5, 210), random.randrange(240, 440), random.randrange(470, 670)
-        cloud_speed1, cloud_speed2, cloud_speed3 = random.randrange(-15, -10), random.randrange(-15, -10), random.randrange(-15, -10)
+        cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
+        cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
 
         AnswerQuad = random.randint(0, 2)
 
-        number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-        deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-        RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-
-        if RandNumber1*RandNumber2 == number1*number2:
-            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-            if RandNumber1*RandNumber2 == number1*number2:
-                deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-        if RandNumber3*RandNumber4 == number1*number2:
-            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-            if RandNumber3*RandNumber4 == number1*number2:
-                deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+        answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
             
     gameExit = False
 
@@ -553,11 +536,11 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         cloud_startx3 += cloud_speed3
 
         if cloud_startx1 < -400:
-            cloud_startx1, cloud_starty1, cloud_speed1 = random.randint (1290, 1345), random.randint(5, 210), random.randint(-15, -10)
+            cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(1290, 1345), random.randint(5, 210), random.randint(-15, -10)
         if cloud_startx2 < -400:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randrange (1290, 1345), random.randrange(240, 440), random.randrange(-15, -10)
+            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(1290, 1345), random.randint(240, 440), random.randint(-15, -10)
         if cloud_startx3 < -400:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randrange (1290, 1345), random.randrange(470, 670), random.randrange(-15, -10)
+            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(1290, 1345), random.randint(470, 670), random.randint(-15, -10)
 
         fuelBoxTop = fuelBox(fuel_startx1, fuel_starty1, purple)
         fuel_startx1 += fuel_speed
@@ -576,56 +559,26 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
             fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
             fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
             
-            number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-            deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-            RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-            
-            if RandNumber1*RandNumber2 == number1*number2:
-                deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                if RandNumber1*RandNumber2 == number1*number2:
-                    deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                    RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-            if RandNumber3*RandNumber4 == number1*number2:
-                deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                if RandNumber3*RandNumber4 == number1*number2:
-                    deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                    RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                
+            answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
+
             AnswerQuad = random.randint(0, 2)
             continue
 
-           
+
         if AnswerQuad == 0:
-            Answer(number1, number2, fuel_startx1, fuel_starty1)
-            GenWrong1(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx2, fuel_starty2, number1, number2)
-            GenWrong2(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx3, fuel_starty3, number1, number2)
+            generateAnswerBox(answer_num1*answer_num2, fuel_startx1, fuel_starty1)
+            generateAnswerBox(wrong1, fuel_startx2, fuel_starty2)
+            generateAnswerBox(wrong2, fuel_startx3, fuel_starty3)
             if fuel_startx1 <= x <= (fuel_startx1 + 100) or fuel_startx1 < x + 110 < fuel_startx1 + 100:
                 if fuel_starty1 <= y <= (fuel_starty1 + 100) or fuel_starty1 <= y + 50 <= fuel_starty1 + 100:
                     score += scorepoints
-                    if score >= highscore:
+                    if score > highscore:
                         highscore = score
                     pygame.mixer.Sound.play(coll_sound)
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
             
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     fuel_speed = fuel_speed*boxspeed
                     
@@ -641,22 +594,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     AnswerQuad = random.randint(0, 2)
                     continue
@@ -670,31 +608,16 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     AnswerQuad = random.randint(0, 2)
                     continue
 
     
         if AnswerQuad == 1:
-            Answer(number1, number2, fuel_startx2, fuel_starty2)
-            GenWrong1(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx1, fuel_starty1, number1, number2)
-            GenWrong2(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx3, fuel_starty3, number1, number2)
+            generateAnswerBox(answer_num1*answer_num2, fuel_startx2, fuel_starty2)
+            generateAnswerBox(wrong1, fuel_startx1, fuel_starty1)
+            generateAnswerBox(wrong2, fuel_startx3, fuel_starty3)
             if fuel_startx1 <= x <= (fuel_startx1 + 100) or fuel_startx1 < x + 110 < fuel_startx1 + 100:
                 if fuel_starty1 <= y <= (fuel_starty1 + 100) or fuel_starty1 <= y + 50 <= fuel_starty1 + 100:
                     lives += -1
@@ -705,22 +628,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     AnswerQuad = random.randint(0, 2)
                     continue
@@ -728,28 +636,13 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
             if fuel_startx2 <= x <= (fuel_startx2 + 100) or fuel_startx2 < x + 110 < fuel_startx2 + 100:
                 if fuel_starty2 <= y <= (fuel_starty2 + 100) or fuel_starty2 <= y + 54 <= fuel_starty2 + 100:
                     score += scorepoints
-                    if score >= highscore:
+                    if score > highscore:
                         highscore = score
                     pygame.mixer.Sound.play(coll_sound)
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                    
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     fuel_speed = fuel_speed*boxspeed
 
@@ -765,31 +658,16 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                    
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     AnswerQuad = random.randint(0, 2)
                     continue
 
 
         if AnswerQuad == 2:
-            Answer(number1, number2, fuel_startx3, fuel_starty3)
-            GenWrong1(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx1, fuel_starty1, number1, number2)
-            GenWrong2(RandNumber1, RandNumber2, RandNumber3, RandNumber4, fuel_startx2, fuel_starty2, number1, number2)
+            generateAnswerBox(answer_num1*answer_num2, fuel_startx3, fuel_starty3)
+            generateAnswerBox(wrong1, fuel_startx2, fuel_starty2)
+            generateAnswerBox(wrong2, fuel_startx1, fuel_starty1)
             if fuel_startx1 <= x <= (fuel_startx1 + 100) or fuel_startx1 < x + 110 < fuel_startx1 + 100:
                 if fuel_starty1 <= y <= (fuel_starty1 + 100) or fuel_starty1 <= y + 50 <= fuel_starty1 + 100:
                     lives += -1
@@ -800,22 +678,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                    
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     AnswerQuad = random.randint(0, 2)
                     continue
@@ -830,22 +693,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
                     
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                    
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
                     
                     AnswerQuad = random.randint(0, 2)
                     continue
@@ -853,29 +701,14 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
             if fuel_startx3 <= x <= (fuel_startx3 + 100) or fuel_startx3 < x + 110 < fuel_startx3 + 100:
                 if fuel_starty3 <= y <= (fuel_starty3 + 100) or fuel_starty3 <= y + 54 <= fuel_starty3 + 100:
                     score += scorepoints
-                    if score >= highscore:
+                    if score > highscore:
                         highscore = score
                     pygame.mixer.Sound.play(coll_sound)
                     fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
                     fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
 
-                    number1, number2 = random.randint(1, difficulty), random.randint(1, difficulty)
-                    deduceFactor1, deduceFactor2, deduceFactor3, deduceFactor4 = random.randint(0, 1), random.randint(1, 2), random.randint(2, 3), random.randint(1, 2)
-                    RandNumber1, RandNumber2, RandNumber3, RandNumber4 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2), abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                    
-                    if RandNumber1*RandNumber2 == number1*number2:
-                        deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                        RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                        if RandNumber1*RandNumber2 == number1*number2:
-                            deduceFactor1, deduceFactor2 = random.randint(1, 2), random.randint(1, 2)
-                            RandNumber1, RandNumber2 = abs(number1 + deduceFactor1), abs(number2 - deduceFactor2)
-                    if RandNumber3*RandNumber4 == number1*number2:
-                        deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                        RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                        if RandNumber3*RandNumber4 == number1*number2:
-                            deduceFactor3, deduceFactor4 = random.randint(2, 3), random.randint(1, 2)
-                            RandNumber3, RandNumber4 = abs(number2 + deduceFactor3), abs(number1 - deduceFactor4)
-                    
+                    answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
+
                     fuel_speed = fuel_speed*boxspeed
                     AnswerQuad = random.randint(0, 2)
                     continue
@@ -883,7 +716,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         HighScoreDisplay(highscore)    
         ScoreDisplay(score)
         LivesDisplay(lives)
-        Question(number1, number2)
+        Question(answer_num1, answer_num2)
         mouse = pygame.mouse.get_pos() #Buttons start
         click = pygame.mouse.get_pressed()
 
