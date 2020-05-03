@@ -41,8 +41,8 @@ pointer = pygame.image.load("Resources/Images/"+pointerChoice[random.randint(0, 
 def LevelSelect():
     easy, medium, hard = 6, 12, 16
     easyspeed, mediumspeed, hardspeed = 1.01, 1.02, 1.03
-    easyscore, mediumscore, hardscore = 5, 10, 15
-    easylives, mediumlives, hardlives = 3, 4, 5
+    easyscore, mediumscore, hardscore = 10, 15, 20
+    easylives, mediumlives, hardlives = 5, 4, 3
     #easy = {6, 1.01, 5, 3}
     #medium = {12, 1.02, 10, 4}
     #hard = {16, 1.03, 15, 5}
@@ -504,7 +504,6 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         fuel_startx3 += fuel_speed
             
         if   ((fuel_startx1 - 110 <= x and x <= fuel_startx1 + 110) and (fuel_starty1 - 50 <= y and y <= fuel_starty1 + 100)):
-            #if (fuel_starty1 <= y and y <= fuel_starty1 + 100) or (fuel_starty1 <= y + 50 and y + 50 <= fuel_starty1 + 100):
             hit = 0
         elif ((fuel_startx2 - 110 <= x and x <= fuel_startx2 + 110) and (fuel_starty2 - 50 <= y and y <= fuel_starty2 + 100)):
             hit = 1
@@ -533,14 +532,12 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     pygame.mixer.Sound.play(gameover_sound)
                     return GameOver(score)
             
-            #if fuel_startx1 <= x <= (fuel_startx1 + 100) or fuel_startx1 < x + 110 < fuel_startx1 + 100:
-             #   if fuel_starty1 <= y <= (fuel_starty1 + 100) or fuel_starty1 <= y + 50 <= fuel_starty1 + 100:
         plane(x, y)
         HighScoreDisplay(highscore)
         ScoreDisplay(score)
         LivesDisplay(lives)
         Question(answer_num1, answer_num2)
-        mouse = pygame.mouse.get_pos() #Buttons start
+        mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
         pygame.display.update()
