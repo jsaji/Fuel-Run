@@ -60,19 +60,22 @@ def LevelSelect():
                 mouse = pygame.mouse.get_pos()
                 if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
                     pygame.mixer.Sound.play(button_sound)
-                    return
-                if 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
+                    return False
+                elif 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
                     pygame.mixer.Sound.play(button_sound)
                     while (keepGoing):
                         keepGoing = game_loop(easy, easyspeed, easyscore, easylives)
-                if 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
+                    return False
+                elif 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
                     pygame.mixer.Sound.play(button_sound)
                     while (keepGoing):
                         keepGoing = game_loop(medium, mediumspeed, mediumscore, mediumlives)
-                if 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
+                    return False
+                elif 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
                     pygame.mixer.Sound.play(button_sound)
                     while (keepGoing):
                         keepGoing = game_loop(hard, hardspeed, hardscore, hardlives)
+                    return False
                 
         screen.fill(s_blue)
         
@@ -203,8 +206,8 @@ def GameOver(score):
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
         quittext = pygame.font.Font("Resources/BULKYPIX.ttf", 45)
-        Quitbutton = quittext.render("Back", True, a_blue)
-        screen.blit(Quitbutton, (570, 535))
+        Quitbutton = quittext.render("Home", True, a_blue)
+        screen.blit(Quitbutton, (560, 535))
         
         rotate += rotation
         planedown = pygame.transform.rotate(pointer, rotate)
@@ -225,6 +228,7 @@ def MainMenu():
     x, y = 125, 333
     
     while Menu:
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -246,8 +250,16 @@ def MainMenu():
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
                 if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
+                    pygame.mixer.music.unload()
                     pygame.mixer.Sound.play(button_sound)
-                    LevelSelect()
+                    if (not LevelSelect()):
+                        pygame.mixer.music.unload()
+                        pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
+                        pygame.mixer.music.play(-1)
+                if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
+                    pygame.mixer.Sound.play(button_sound)
+                    pygame.quit()
+                    sys.exit()
 
         x += x_change
         y += y_change
@@ -286,17 +298,13 @@ def MainMenu():
             pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
         pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
-##        if 540 + 200 > mouse[0] > 540 and 500 + 100 > mouse[1] > 500:
-##            pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
-##            if click[0] == 1:
-##                pygame.mixer.Sound.play(button_sound)
-##                pygame.quit()
-##                quit()
-##        else:
-##            pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-##        exittext = pygame.font.Font("BULKYPIX.ttf", 60)
-##        QuitButton = exittext.render("Quit", True, a_blue)
-##        screen.blit(QuitButton, (560, 525))
+        if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
+            pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
+        else:
+            pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
+        exittext = pygame.font.Font("Resources/BULKYPIX.ttf", 60)
+        QuitButton = exittext.render("Quit", True, a_blue)
+        screen.blit(QuitButton, (560, 525))
         
         MainHighScoreDisplay(highscore)
         plane(x, y)
@@ -318,10 +326,10 @@ def paused():
                 mouse = pygame.mouse.get_pos()
                 if (520 + 240 > mouse[0] and mouse[0] > 520) and (310 + 120 > mouse[1] and mouse[1] > 310):
                     pygame.mixer.Sound.play(button_sound)
-                    unpause()
+                    return False
                 if (540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500):
                     pygame.mixer.Sound.play(button_sound)
-                    MainMenu()
+                    return True
 
         screen.fill(purple)
         message = pygame.font.Font("Resources/BULKYPIX.ttf", 115)
@@ -418,7 +426,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
     x, y = 75, 333
-    x_change, y_change = 30, 30
+    x_change, y_change = 0, 0
     
     fuel_speed = -10
     score = 0
@@ -446,7 +454,9 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                     y_change = -30
                 if event.key == pygame.K_ESCAPE:
                     pause = True
-                    paused()
+                    escapeToMenu = paused()
+                    if(escapeToMenu):
+                        return False
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                     x_change = 0
