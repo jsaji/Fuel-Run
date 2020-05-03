@@ -20,19 +20,17 @@ Use **ARROW KEYS** to move the plane:
 Players can move diagonally by holding down one of the keys that allow vertical movement and one of the keys that allow horizontal movement (e.g. holding UP and LEFT will cause players to move left diagonally upwards).
 Hold down keys to move in that direction continuously.
 
-# 2020
+## Version History
 
-## v1.0.1
+### v1.0.1 (3 May 2020)
 
 * Bug fixes, including:
     * Refined buttons, so no more accidentally clicking through multiple screens.
     * Music changes based on whether playing or choosing difficulty.
-* Performance improvements (lowered framerate, cleaner code and less simultaneous processes).
-* Easier to control the plane with ease, instead of accidentally flying off the screen and.
+* Performance improvements (lowered framerate, much cleaner code and less simultaneous processes).
+* Easier to control the plane with ease, instead of accidentally flying off the screen.
 
-# 2016
-
-## v1.0.0
+### v1.0.0 (5 September 2016)
 
 * 3 difficulties:
     * **EASY** consists of the times tables from 1 to 6, and is suited for children in lower grades. This is the level that builds upon the times tables of the smaller numbers, and prepares them for the MEDIUM difficulty. In EASY, players have 5 lives and, for every correct answer, they gain 10 points to their score. Fuel box speed increases by 1% every time a correct answer is chosen.
