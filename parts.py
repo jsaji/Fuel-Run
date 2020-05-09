@@ -45,7 +45,7 @@ class Player:
         self.draw()
         self.rotation = 0
 
-    def move(self, move_x, move_y, rotate=0):
+    def move(self, move_x, move_y):
         if move_x > 0: self.x_pos += self.move_speed
         elif move_x < 0: self.x_pos -= self.move_speed
         if move_y > 0: self.y_pos += self.move_speed
@@ -53,7 +53,7 @@ class Player:
         self.draw()
 
     def rotate(self, rotation):
-        self.img = pygame.transform.rotate(self.img, rotate)
+        self.img = pygame.transform.rotate(self.img, rotation)
         self.draw()
 
     def move_to(self, x_pos, y_pos):
@@ -65,6 +65,7 @@ class Player:
         self.x_pos = int(self.screen.get_size()[0]/5)
         self.y_pos = int(self.screen.get_size()[1]/2)
         self.rotate(-self.rotation)
+        self.rotation = 0
         self.draw()
 
     def draw(self):
@@ -81,4 +82,9 @@ class Player:
             self.y_pos = 0
         elif self.y_pos < -55:
             self.y_pos = screen_dim[1]
+
+    def hit_object(self, x_range, y_range):
+        if (self.x_pos >= x_range[0] and self.x_pos <= x_range[1] and self.y_pos >= y_range[0] and self.y_pos <= y_range[1]):
+            return True
+        else: return False
         

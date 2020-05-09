@@ -133,8 +133,8 @@ def GameOver(score):
     
     clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
     scorefont = set_font(70)
-    rotation = 10
-    player.move_to(300, 360)
+    rotation = 1
+    player.reset()
 
     while True:
         for event in pygame.event.get():
@@ -365,20 +365,17 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
 
     player.reset()
     x_change, y_change = 0, 0
-    
     fuel_speed = -10
     score = 0
-    
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
-            
-    gameExit = False
-
+    game_exit = False
     lives = lifesum
-    while not gameExit:
+
+    while not game_exit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     x_change = -1
@@ -399,7 +396,6 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     y_change = 0
 
-        
         screen.fill(s_blue)
         for cloud in clouds: cloud.update()
         player.move(x_change, y_change)
@@ -427,12 +423,12 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         fuel_startx1 += fuel_speed
         fuel_startx2 += fuel_speed
         fuel_startx3 += fuel_speed
-            
-        if   ((fuel_startx1 - 110 <= x and x <= fuel_startx1 + 110) and (fuel_starty1 - 50 <= y and y <= fuel_starty1 + 100)):
+
+        if player.hit_object((fuel_startx1 - 110, fuel_startx1 + 110), (fuel_starty1 - 50, fuel_starty1 + 100)):
             hit = 0
-        elif ((fuel_startx2 - 110 <= x and x <= fuel_startx2 + 110) and (fuel_starty2 - 50 <= y and y <= fuel_starty2 + 100)):
+        elif player.hit_object((fuel_startx2 - 110, fuel_startx2 + 110), (fuel_starty2 - 50, fuel_starty2 + 100)):
             hit = 1
-        elif ((fuel_startx3 - 110 <= x and x <= fuel_startx3 + 110) and (fuel_starty3 - 50 <= y and y <= fuel_starty3 + 100)):
+        elif player.hit_object((fuel_startx3 - 110, fuel_startx3 + 110), (fuel_starty3 - 50, fuel_starty3 + 100)):
             hit = 2
         else:
             hit = -1
@@ -450,14 +446,10 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 pygame.mixer.Sound.play(crash_sound)
                 lives -= 1
                 hit = -1
-                if(outOfBounds):
-                    player.reset()
-                    trigger = False
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
                     return GameOver(score)
             
-        plane(x, y)
         HighScoreDisplay(highscore)
         ScoreDisplay(score)
         LivesDisplay(lives)
