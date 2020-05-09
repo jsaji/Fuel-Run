@@ -47,9 +47,9 @@ def LevelSelect():
     #medium = {12, 1.02, 10, 4}
     #hard = {16, 1.03, 15, 5}
 
-    cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
-    cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
-    cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
+    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
+    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
+    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
 
     while True:
         for event in pygame.event.get():
@@ -84,15 +84,12 @@ def LevelSelect():
         cloud_startx2 += cloud_speed2
         cloud_startx3 += cloud_speed3
 
-        if cloud_startx1 < -400:
-            cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(1290, 1345), random.randint(5, 210), random.randint(-15, -10)
-        if cloud_startx2 < -400:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(1290, 1345), random.randint(240, 440), random.randint(-15, -10)
-        if cloud_startx3 < -400:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(1290, 1345), random.randint(470, 670), random.randint(-15, -10)
+        if cloud_startx1 < -400: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
+        if cloud_startx2 < -400: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
+        if cloud_startx3 < -400: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
 
-        buttontext = pygame.font.Font("Resources/BULKYPIX.ttf", 40)
-        diffchoose = pygame.font.Font("Resources/BULKYPIX.ttf", 50)
+        buttontext = set_font(40)
+        diffchoose = set_font(50)
         DiffTextSurf, DiffTextRect = text_objects("Choose difficulty:", diffchoose)
         DiffTextRect.center = (int(display_width/2), int(display_height/4.5))
         screen.blit(DiffTextSurf, DiffTextRect)
@@ -104,7 +101,7 @@ def LevelSelect():
             pygame.draw.rect(screen, csi_blue, (40, 40, 160, 60))
         else:
             pygame.draw.rect(screen, button_red, (40, 40, 160, 60))
-        hometext = pygame.font.Font("Resources/BULKYPIX.ttf", 30)
+        hometext = set_font(30)
         Homebutton = hometext.render("Home", True, a_blue)
         screen.blit(Homebutton, (65, 60))
         
@@ -141,17 +138,11 @@ def GameOver(score):
     global highscore
     pygame.mixer.Sound.play(gameover_sound)
     
-    easy, medium, hard, extreme = 4, 8, 12, 16
-    easyspeed, mediumspeed, hardspeed, extremespeed = 1.01, 1.02, 1.03, 1.04
-    easyscore, mediumscore, hardscore, extremescore = 5, 10, 15, 20
-    easylives, mediumlives, hardlives, extremelives = 3, 4, 5, 6
-    
-    cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(-100, 300), random.randint(350, 650), random.randint(700, 1000)
-    cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(750, 800), random.randint(750, 800), random.randint(750, 800)
-    cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-20, -15), random.randint(-20, -15), random.randint(-20, -15)
-    
-    scorefont = pygame.font.Font("Resources/BULKYPIX.ttf", 70)
-    x, y = 100, 360
+    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 0)
+    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 0)
+    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 0)
+
+    scorefont = set_font(70)
     rotation = 10
     rotate = 0
     
@@ -175,14 +166,11 @@ def GameOver(score):
         cloud_starty1 += cloud_speed1
         cloud_starty2 += cloud_speed2
         cloud_starty3 += cloud_speed3
-
-        if cloud_starty1 < -100:
-            cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(-100, 300), random.randint(750, 800), random.randint(-20, -15)
-        if cloud_starty2 < -100:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(350, 650), random.randint(750, 800), random.randint(-20, -15)
-        if cloud_starty3 < -100:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(700, 1000), random.randint(750, 800), random.randint(-20, -15)
         
+        if cloud_starty1 < -100: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 0)
+        if cloud_starty2 < -100: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 0)
+        if cloud_starty3 < -100: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 0)
+
         if highscore > score:
             highscore = score
             HighScoreTextSurf, HighScoreTextRect = text_objects("New Highscore: "+str(highscore)+"!", scorefont)
@@ -205,7 +193,7 @@ def GameOver(score):
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-        quittext = pygame.font.Font("Resources/BULKYPIX.ttf", 45)
+        quittext = set_font(45)
         Quitbutton = quittext.render("Home", True, a_blue)
         screen.blit(Quitbutton, (560, 535))
         
@@ -222,9 +210,9 @@ def MainMenu():
     
     x_change, y_change = 0, 0
     
-    cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
-    cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
-    cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
+    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
+    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
+    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
     x, y = 125, 333
     
     while Menu:
@@ -250,10 +238,8 @@ def MainMenu():
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
                 if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
-                    pygame.mixer.music.unload()
                     pygame.mixer.Sound.play(button_sound)
                     if (not LevelSelect()):
-                        pygame.mixer.music.unload()
                         pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
                         pygame.mixer.music.play(-1)
                 if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
@@ -279,14 +265,11 @@ def MainMenu():
         cloud_startx2 += cloud_speed2
         cloud_startx3 += cloud_speed3
 
-        if cloud_startx1 < -400:
-            cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(1290, 1345), random.randint(5, 210), random.randint(-15, -10)
-        if cloud_startx2 < -400:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(1290, 1345), random.randint(240, 440), random.randint(-15, -10)
-        if cloud_startx3 < -400:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(1290, 1345), random.randint(470, 670), random.randint(-15, -10)
+        if cloud_startx1 < -400: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
+        if cloud_startx2 < -400: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
+        if cloud_startx3 < -400: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
 
-        message = pygame.font.Font("Resources/BULKYPIX.ttf", 175)
+        message = set_font(175)
         TextSurf, TextRect = text_objects("Fuel Run", message)
         TextRect.center = (int(display_width/2), int(display_height/4.5))
         screen.blit(TextSurf, TextRect)
@@ -302,7 +285,7 @@ def MainMenu():
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-        exittext = pygame.font.Font("Resources/BULKYPIX.ttf", 60)
+        exittext = set_font(60)
         QuitButton = exittext.render("Quit", True, a_blue)
         screen.blit(QuitButton, (560, 525))
         
@@ -311,7 +294,21 @@ def MainMenu():
         
         pygame.display.update()
         clock.tick(30)
-        
+
+def new_cloud_var(section, horizontal):
+    x_pos, y_pos, speed = 0, 0, random.randint(-20, -10)
+    if horizontal:
+        x_pos = random.randint(1290, 1345)
+        if section == 0: y_pos = random.randint(5, 210)
+        elif section == 1: y_pos = random.randint(240, 440)
+        else: y_pos = random.randint(470, 670)
+    else:
+        y_pos = random.randint(750, 800)
+        if section == 0: x_pos = random.randint(-100, 300)
+        elif section == 1: x_pos = random.randint(350, 650)
+        else: x_pos = random.randint(700, 1000)
+    return x_pos, y_pos, speed
+
 def unpause():
     global pause
     pause = False
@@ -332,7 +329,7 @@ def paused():
                     return True
 
         screen.fill(purple)
-        message = pygame.font.Font("Resources/BULKYPIX.ttf", 115)
+        message = set_font(115)
         TextSurf, TextRect = paused_text("Paused", message)
         TextRect.center = (int(display_width/2), int(display_height/3))
         screen.blit(TextSurf, TextRect)
@@ -350,13 +347,15 @@ def paused():
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
 
-        buttontext = pygame.font.Font("Resources/BULKYPIX.ttf", 45)
+        buttontext = set_font(45)
         Quitbutton = buttontext.render("Home", True, a_blue)
         screen.blit(Quitbutton, (560, 535))
         
         pygame.display.update()
         clock.tick(30)
-        
+
+def set_font(size):
+    return pygame.font.Font("Resources/BULKYPIX.ttf", size)
 def text_objects(text, font):
     textSurface = font.render(text, True, i_red)
     return textSurface, textSurface.get_rect()
@@ -371,27 +370,27 @@ def box_text(text, font):
     return textSurface, textSurface.get_rect()
 
 def ScoreDisplay(score):
-    scorefont = pygame.font.Font("Resources/BULKYPIX.ttf", 40)
+    scorefont = set_font(40)
     ScoreCount = scorefont.render("Score: " + str(score), True, i_red)
     screen.blit(ScoreCount, (50, 650))
 
 def HighScoreDisplay(highscore):
-    highscorefont = pygame.font.Font("Resources/BULKYPIX.ttf", 25)
+    highscorefont = set_font(25)
     HighScoreCount = highscorefont.render("High Score: " + str(highscore), True, i_red)
     screen.blit(HighScoreCount, (50, 600))
 
 def MainHighScoreDisplay(highscore):
-    highscorefont = pygame.font.Font("Resources/BULKYPIX.ttf", 45)
+    highscorefont = set_font(45)
     HighScoreCount = highscorefont.render("High Score: " + str(highscore), True, i_red)
     screen.blit(HighScoreCount, (50, 650))
 
 def LivesDisplay(lives):
-    lifefont = pygame.font.Font("Resources/BULKYPIX.ttf", 50)
+    lifefont = set_font(50)
     LifeCount = lifefont.render(str(lives)+" Lives", True, i_red)
     screen.blit(LifeCount, (1000, 650))
 
 def Question(number1, number2):
-    ingame = pygame.font.Font("Resources/BULKYPIX.ttf", 80)
+    ingame = set_font(80)
     Line = ingame.render(str(number1)+" x "+str(number2)+" = ?", True, i_red)
     screen.blit(Line, (400, 50))
 
@@ -407,7 +406,7 @@ def generateNumbers(difficulty):
 
 def fuelBox(number, fuel_startx, fuel_starty, color):
     pygame.draw.rect(screen, color, [int(fuel_startx), int(fuel_starty), 100, 100])
-    boxtext = pygame.font.Font("Resources/BULKYPIX.ttf", 35)
+    boxtext = set_font(35)
     TextSurf, TextRect = box_text(str(number), boxtext)
     TextRect.center = (int(fuel_startx + 55), int(fuel_starty + 55))
     screen.blit(TextSurf, TextRect)
@@ -431,9 +430,9 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     fuel_speed = -10
     score = 0
     
-    cloud_startx1, cloud_startx2, cloud_startx3 = random.randint(1290, 1345), random.randint(1290, 1345), random.randint(1290, 1345)
-    cloud_starty1, cloud_starty2, cloud_starty3 = random.randint(5, 210), random.randint(240, 440), random.randint(470, 670)
-    cloud_speed1, cloud_speed2, cloud_speed3 = random.randint(-15, -10), random.randint(-15, -10), random.randint(-15, -10)
+    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
+    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
+    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
             
     gameExit = False
 
@@ -472,12 +471,9 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         cloud_startx2 += cloud_speed2
         cloud_startx3 += cloud_speed3
 
-        if cloud_startx1 < -400:
-            cloud_startx1, cloud_starty1, cloud_speed1 = random.randint(1290, 1345), random.randint(5, 210), random.randint(-15, -10)
-        if cloud_startx2 < -400:
-            cloud_startx2, cloud_starty2, cloud_speed2 = random.randint(1290, 1345), random.randint(240, 440), random.randint(-15, -10)
-        if cloud_startx3 < -400:
-            cloud_startx3, cloud_starty3, cloud_speed3 = random.randint(1290, 1345), random.randint(470, 670), random.randint(-15, -10)
+        if cloud_startx1 < -400: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
+        if cloud_startx2 < -400: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
+        if cloud_startx3 < -400: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
 
         if (trigger):
             fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
