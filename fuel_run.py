@@ -180,7 +180,7 @@ def GameOver(score):
         Quitbutton = quittext.render("Home", True, a_blue)
         screen.blit(Quitbutton, (560, 535))
         
-        player.rotate(rotation)
+        #player.rotate(rotation)
 
         pygame.display.update()
         clock.tick(30)

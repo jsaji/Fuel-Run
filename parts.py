@@ -64,8 +64,9 @@ class Player:
     def reset(self):
         self.x_pos = int(self.screen.get_size()[0]/5)
         self.y_pos = int(self.screen.get_size()[1]/2)
-        self.rotate(-self.rotation)
-        self.rotation = 0
+        if (self.rotation):
+            self.rotate(-self.rotation)
+            self.rotation = 0
         self.draw()
 
     def draw(self):
@@ -84,7 +85,5 @@ class Player:
             self.y_pos = screen_dim[1]
 
     def hit_object(self, x_range, y_range):
-        if (self.x_pos >= x_range[0] and self.x_pos <= x_range[1] and self.y_pos >= y_range[0] and self.y_pos <= y_range[1]):
-            return True
-        else: return False
+        return (self.x_pos >= x_range[0] and self.x_pos <= x_range[1] and self.y_pos >= y_range[0] and self.y_pos <= y_range[1])
         
