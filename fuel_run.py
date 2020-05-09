@@ -2,7 +2,7 @@ import pygame
 import time
 import sys
 import random
-from parts import Cloud
+from parts import Cloud, Player
 
 pygame.init()
 pygame.font.init()
@@ -11,7 +11,7 @@ pygame.mixer.pre_init(44100, 16, 2, 4096)
 gameIcon = pygame.image.load("Resources/Images/Icon.png")
 pygame.display.set_icon(gameIcon)
 display_width, display_height = 1280, 720
-screen = pygame.display.set_mode((display_width, display_height), 0, 32)
+screen = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Fuel Run")
 clock = pygame.time.Clock()
 
@@ -36,8 +36,7 @@ gameover_sound = pygame.mixer.Sound("Resources/Sound/GameOver.wav")
 pause = False
 highscore = 0
 
-pointerChoice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
-pointer = pygame.image.load("Resources/Images/"+pointerChoice[random.randint(0, 7)]+"Plane.png")
+player = Player(screen, 25)
 
 section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
 cloud_speed = (-20, -10)
@@ -127,8 +126,7 @@ def LevelSelect():
             
         pygame.display.update()
         clock.tick(30)
-        
-        
+            
 def GameOver(score):
     global highscore
     pygame.mixer.Sound.play(gameover_sound)
@@ -136,8 +134,8 @@ def GameOver(score):
     clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
     scorefont = set_font(70)
     rotation = 10
-    rotate = 0
-    
+    player.move_to(300, 360)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -182,37 +180,33 @@ def GameOver(score):
         Quitbutton = quittext.render("Home", True, a_blue)
         screen.blit(Quitbutton, (560, 535))
         
-        rotate += rotation
-        planedown = pygame.transform.rotate(pointer, rotate)
-        screen.blit(planedown, (300, 360))
+        player.rotate(rotation)
+
         pygame.display.update()
         clock.tick(30)
 
 def MainMenu():
-    MENU = True
     pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
     pygame.mixer.music.play(-1)
     
     x_change, y_change = 0, 0
-    
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
-    x, y = 125, 333
+    player.reset()
     
-    while MENU:
-        
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    x_change = -25
+                    x_change = -1
                 if event.key == pygame.K_RIGHT:
-                    x_change = 25
+                    x_change = 1
                 if event.key == pygame.K_DOWN:
-                    y_change = 25
+                    y_change = 1
                 if event.key == pygame.K_UP:
-                    y_change = -25
+                    y_change = -1
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     x_change = 0
@@ -230,20 +224,10 @@ def MainMenu():
                     pygame.quit()
                     sys.exit()
 
-        x += x_change
-        y += y_change
         screen.fill(s_blue)
-
-        if x > display_width:
-            x = -120
-        elif x < -120:
-            x = display_width
-        if y > display_height:
-            y = -55
-        elif y < -55:
-            y = display_height
         
         for cloud in clouds: cloud.update()
+        player.move(x_change, y_change)
 
         message = set_font(175)
         TextSurf, TextRect = text_objects("Fuel Run", message)
@@ -266,7 +250,6 @@ def MainMenu():
         screen.blit(QuitButton, (560, 525))
         
         MainHighScoreDisplay(highscore)
-        plane(x, y)
         
         pygame.display.update()
         clock.tick(30)
@@ -373,16 +356,14 @@ def fuelBox(number, fuel_startx, fuel_starty, color):
     TextRect.center = (int(fuel_startx + 55), int(fuel_starty + 55))
     screen.blit(TextSurf, TextRect)
 
-def plane(x, y):
-    screen.blit(pointer, (x, y))
-
 def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     global highscore
     global pause
     trigger = True
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
-    x, y = 75, 333
+
+    player.reset()
     x_change, y_change = 0, 0
     
     fuel_speed = -10
@@ -400,13 +381,13 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    x_change = -30
+                    x_change = -1
                 if event.key == pygame.K_RIGHT:
-                    x_change = 30
+                    x_change = 1
                 if event.key == pygame.K_DOWN:
-                    y_change = 30
+                    y_change = 1
                 if event.key == pygame.K_UP:
-                    y_change = -30
+                    y_change = -1
                 if event.key == pygame.K_ESCAPE:
                     pause = True
                     escapeToMenu = paused()
@@ -418,11 +399,10 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     y_change = 0
 
-        x += x_change
-        y += y_change
-        screen.fill(s_blue)
         
+        screen.fill(s_blue)
         for cloud in clouds: cloud.update()
+        player.move(x_change, y_change)
 
         if (trigger):
             fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
@@ -456,9 +436,9 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
             hit = 2
         else:
             hit = -1
-        outOfBounds = (x > display_width or x < -120 or y > display_height or y < -55)
+
         fuelGone = (fuel_startx1 + fuel_startx2 + fuel_startx3 < -600)
-        if(hit+1 or fuelGone or outOfBounds):
+        if(hit+1 or fuelGone):
             trigger = True
             if(hit == AnswerQuad):
                 score += scorepoints
@@ -471,7 +451,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 lives -= 1
                 hit = -1
                 if(outOfBounds):
-                    x, y = 100, 333
+                    player.reset()
                     trigger = False
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
