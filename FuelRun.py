@@ -2,6 +2,7 @@ import pygame
 import time
 import sys
 import random
+from parts import Cloud
 
 pygame.init()
 pygame.font.init()
@@ -38,6 +39,9 @@ highscore = 0
 pointerChoice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
 pointer = pygame.image.load("Resources/Images/"+pointerChoice[random.randint(0, 7)]+"Plane.png")
 
+section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
+cloud_speed = (-20, -10)
+
 def LevelSelect():
     easy, medium, hard = 6, 12, 16
     easyspeed, mediumspeed, hardspeed = 1.01, 1.02, 1.03
@@ -47,9 +51,7 @@ def LevelSelect():
     #medium = {12, 1.02, 10, 4}
     #hard = {16, 1.03, 15, 5}
 
-    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
-    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
-    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
+    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
 
     while True:
         for event in pygame.event.get():
@@ -79,14 +81,7 @@ def LevelSelect():
                 
         screen.fill(s_blue)
         
-        cloudTop, cloudMid, cloudBot = cloud(cloud_startx1, cloud_starty1), cloud(cloud_startx2, cloud_starty2), cloud(cloud_startx3, cloud_starty3)
-        cloud_startx1 += cloud_speed1
-        cloud_startx2 += cloud_speed2
-        cloud_startx3 += cloud_speed3
-
-        if cloud_startx1 < -400: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
-        if cloud_startx2 < -400: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
-        if cloud_startx3 < -400: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
+        for cloud in clouds: cloud.update()
 
         buttontext = set_font(40)
         diffchoose = set_font(50)
@@ -138,10 +133,7 @@ def GameOver(score):
     global highscore
     pygame.mixer.Sound.play(gameover_sound)
     
-    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 0)
-    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 0)
-    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 0)
-
+    clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
     scorefont = set_font(70)
     rotation = 10
     rotate = 0
@@ -161,15 +153,8 @@ def GameOver(score):
                     return False
         
         screen.fill(s_blue)
-        
-        cloudTop, cloudMid, cloudBot = cloud(cloud_startx1, cloud_starty1), cloud(cloud_startx2, cloud_starty2), cloud(cloud_startx3, cloud_starty3)
-        cloud_starty1 += cloud_speed1
-        cloud_starty2 += cloud_speed2
-        cloud_starty3 += cloud_speed3
-        
-        if cloud_starty1 < -100: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 0)
-        if cloud_starty2 < -100: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 0)
-        if cloud_starty3 < -100: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 0)
+
+        for cloud in clouds: cloud.update()
 
         if highscore > score:
             highscore = score
@@ -204,18 +189,16 @@ def GameOver(score):
         clock.tick(30)
 
 def MainMenu():
-    Menu = True
+    MENU = True
     pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
     pygame.mixer.music.play(-1)
     
     x_change, y_change = 0, 0
     
-    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
-    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
-    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
+    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     x, y = 125, 333
     
-    while Menu:
+    while MENU:
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -259,15 +242,8 @@ def MainMenu():
             y = -55
         elif y < -55:
             y = display_height
-
-        cloudTop, cloudMid, cloudBot = cloud(cloud_startx1, cloud_starty1), cloud(cloud_startx2, cloud_starty2), cloud(cloud_startx3, cloud_starty3)
-        cloud_startx1 += cloud_speed1
-        cloud_startx2 += cloud_speed2
-        cloud_startx3 += cloud_speed3
-
-        if cloud_startx1 < -400: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
-        if cloud_startx2 < -400: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
-        if cloud_startx3 < -400: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
+        
+        for cloud in clouds: cloud.update()
 
         message = set_font(175)
         TextSurf, TextRect = text_objects("Fuel Run", message)
@@ -294,20 +270,6 @@ def MainMenu():
         
         pygame.display.update()
         clock.tick(30)
-
-def new_cloud_var(section, horizontal):
-    x_pos, y_pos, speed = 0, 0, random.randint(-20, -10)
-    if horizontal:
-        x_pos = random.randint(1290, 1345)
-        if section == 0: y_pos = random.randint(5, 210)
-        elif section == 1: y_pos = random.randint(240, 440)
-        else: y_pos = random.randint(470, 670)
-    else:
-        y_pos = random.randint(750, 800)
-        if section == 0: x_pos = random.randint(-100, 300)
-        elif section == 1: x_pos = random.randint(350, 650)
-        else: x_pos = random.randint(700, 1000)
-    return x_pos, y_pos, speed
 
 def unpause():
     global pause
@@ -411,10 +373,6 @@ def fuelBox(number, fuel_startx, fuel_starty, color):
     TextRect.center = (int(fuel_startx + 55), int(fuel_starty + 55))
     screen.blit(TextSurf, TextRect)
 
-def cloud(cloud_x, cloud_y):
-    img = pygame.image.load("Resources/Images/Cloud.png")
-    screen.blit(img, (cloud_x, cloud_y))
-
 def plane(x, y):
     screen.blit(pointer, (x, y))
 
@@ -430,9 +388,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     fuel_speed = -10
     score = 0
     
-    cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
-    cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
-    cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
+    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
             
     gameExit = False
 
@@ -465,15 +421,8 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         x += x_change
         y += y_change
         screen.fill(s_blue)
-
-        cloudTop, cloudMid, cloudBot = cloud(cloud_startx1, cloud_starty1), cloud(cloud_startx2, cloud_starty2), cloud(cloud_startx3, cloud_starty3)
-        cloud_startx1 += cloud_speed1
-        cloud_startx2 += cloud_speed2
-        cloud_startx3 += cloud_speed3
-
-        if cloud_startx1 < -400: cloud_startx1, cloud_starty1, cloud_speed1 = new_cloud_var(0, 1)
-        if cloud_startx2 < -400: cloud_startx2, cloud_starty2, cloud_speed2 = new_cloud_var(1, 1)
-        if cloud_startx3 < -400: cloud_startx3, cloud_starty3, cloud_speed3 = new_cloud_var(2, 1)
+        
+        for cloud in clouds: cloud.update()
 
         if (trigger):
             fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
