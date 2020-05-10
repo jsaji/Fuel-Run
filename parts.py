@@ -13,15 +13,10 @@ class Cloud:
         self.img = pygame.image.load("Resources/Images/Cloud.png")
         self.reset()
 
-    def update(self):
-        if self.is_horizontal:
-            self.x_pos += self.speed
-        else:
-            self.y_pos += self.speed
-        
-        if self.y_pos < -100 or self.x_pos < -400:
-            self.reset()
-        
+    def draw(self):
+        if self.is_horizontal: self.x_pos += self.speed
+        else: self.y_pos += self.speed
+        if self.y_pos < -100 or self.x_pos < -400: self.reset()
         self.screen.blit(self.img, (self.x_pos, self.y_pos))
 
     def reset(self):
@@ -33,7 +28,39 @@ class Cloud:
             self.y_pos = self.screen.get_size()[1] + random.randint(30, 80)
             self.x_pos = random.randint(self.pos_range[0], self.pos_range[1])
 
+class FuelBox:
+    def __init__(self, pos_range, box_size, text_size, screen):
+        self.pos_range = pos_range
+        self.screen = screen
+        self.box_size = box_size
+        self.text_size = text_size
+        self.number = 0
+        self.box_colour = (160, 32, 240)
+        self.text_colour = (240, 248, 255)
+        self.speed = -10
+        self.x_pos = 0
+        self.y_pos = 0
 
+    def reset(self, number):
+        self.x_pos = self.screen.get_size()[0] + random.randint(30, 70)
+        self.y_pos = random.randint(self.pos_range[0], self.pos_range[1])
+        self.number = number
+
+    def draw(self):
+        self.x_pos += self.speed
+        pygame.draw.rect(self.screen, self.box_colour, (self.x_pos, self.y_pos, self.box_size, self.box_size))
+        self.display_text(str(self.number), (self.x_pos, self.y_pos))
+
+    def check_bounds(self):
+        return self.x_pos < -2 * self.box_size
+    
+    def display_text(self, text, pos):
+        font = pygame.font.Font("Resources/BULKYPIX.ttf", self.text_size)
+        text_surface = font.render(text, True, self.text_colour)
+        disp_pos = text_surface.get_rect()
+        disp_pos.center = (int(pos[0] + self.box_size/2), int(pos[1] + self.box_size/2))
+        self.screen.blit(text_surface, disp_pos)
+    
 class Player:
     def __init__(self, screen, move_speed):
         plane_choice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]

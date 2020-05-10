@@ -2,7 +2,7 @@ import pygame
 import time
 import sys
 import random
-from parts import Cloud, Player
+from parts import Cloud, Player, FuelBox
 
 pygame.init()
 pygame.font.init()
@@ -74,7 +74,7 @@ def level_select():
                     return False
                 
         screen.fill(s_blue)
-        for cloud in clouds: cloud.update()
+        for cloud in clouds: cloud.draw()
 
         display_text("Choose difficulty:", i_red, 50, (display_width/2, display_height/4.5))
         diff_button_size = 40
@@ -124,7 +124,7 @@ def game_over(score):
         
         screen.fill(s_blue)
 
-        for cloud in clouds: cloud.update()
+        for cloud in clouds: cloud.draw()
 
         if highscore > score:
             highscore = score
@@ -187,7 +187,7 @@ def main_menu():
 
         screen.fill(s_blue)
         
-        for cloud in clouds: cloud.update()
+        for cloud in clouds: cloud.draw()
         player.move(x_change, y_change)
 
         display_text("Fuel Run", i_red, 175, (display_width/2, display_height/4.5))
@@ -250,7 +250,7 @@ def display_text(text, colour, size, pos, is_centered=True):
     text_surface = font.render(text, True, colour) #i_red
     disp_pos = pos
     if is_centered:
-        disp_pos= text_surface.get_rect()
+        disp_pos = text_surface.get_rect()
         disp_pos.center = (int(pos[0]), int(pos[1]))
     screen.blit(text_surface, disp_pos)
 
@@ -262,11 +262,21 @@ def generate_numbers(time_table):
         wrong1 = abs(num1 + random.randint(1, 2)) * abs(num2 - random.randint(1, 2))
     while (wrong2 == answer or wrong2 == wrong1):
         wrong2 = abs(num1 + random.randint(2, 3)) * abs(num2 - random.randint(1, 2))
-    return num1, num2, wrong1, wrong2
+    return [wrong1, wrong2, num1, num2]
 
 def fuel_box(number, fuel_startx, fuel_starty, color):
     pygame.draw.rect(screen, color, [int(fuel_startx), int(fuel_starty), 100, 100])
     display_text(str(number), a_blue, 35, (fuel_startx + 55, fuel_starty + 55))
+
+def reset_fuel_boxes(fuel_boxes, answer_section, numbers): 
+    j = 0
+    for i in range(len(fuel_boxes)):
+        if i == answer_section:
+            fuel_boxes[i].reset(numbers[-1]*numbers[-2])
+        else:
+            fuel_boxes[i].reset(numbers[j])
+            j += 1
+    return fuel_boxes
 
 def game_loop(difficulty_settings):
     global highscore
@@ -274,6 +284,8 @@ def game_loop(difficulty_settings):
     trigger = True
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
+    fuel_box_sections = [(100, 120), (300, 320), (500, 520)]
+    fuel_boxes = [FuelBox(fuel_box_sections[i], 100, 35, screen) for i in range(3)]
 
     player.reset()
     x_change, y_change = 0, 0
@@ -284,10 +296,8 @@ def game_loop(difficulty_settings):
     points = difficulty_settings[2]
     lives = difficulty_settings[3]
     
-
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     game_exit = False
-    
 
     while not game_exit:
         for event in pygame.event.get():
@@ -305,8 +315,8 @@ def game_loop(difficulty_settings):
                     y_change = -1
                 if event.key == pygame.K_ESCAPE:
                     pause = True
-                    escapeToMenu = paused()
-                    if(escapeToMenu):
+                    go_back = paused()
+                    if(go_back):
                         return False
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
@@ -315,46 +325,27 @@ def game_loop(difficulty_settings):
                     y_change = 0
 
         screen.fill(s_blue)
-        for cloud in clouds: cloud.update()
+        for cloud in clouds: cloud.draw()
         player.move(x_change, y_change)
 
         if (trigger):
-            fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
-            fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
-            answer_num1, answer_num2, wrong1, wrong2 = generate_numbers(time_table)
-            AnswerQuad = random.randint(0, 2)
+            numbers = generate_numbers(time_table)
+            answer_section = random.randint(0, 2)
+            fuel_boxes = reset_fuel_boxes(fuel_boxes, answer_section, numbers)
             trigger = False
+            
+        hit = -1
+        fuel_gone = False
+        for i in range(len(fuel_boxes)):
+            fuel_boxes[i].draw()
+            fuel_gone = fuel_boxes[i].check_bounds()
+            x, y = fuel_boxes[i].x_pos, fuel_boxes[i].y_pos
+            if player.hit_object((x - 110, x + 110), (y - 50, y + 100)):
+                hit = i
 
-        if AnswerQuad == 0:
-            topBox = fuel_box(answer_num1*answer_num2, fuel_startx1, fuel_starty1, purple)
-            midBox = fuel_box(wrong1, fuel_startx2, fuel_starty2, purple)
-            botBox = fuel_box(wrong2, fuel_startx3, fuel_starty3, purple)
-        elif AnswerQuad == 1:
-            midBox = fuel_box(answer_num1*answer_num2, fuel_startx2, fuel_starty2, purple)
-            topBox = fuel_box(wrong1, fuel_startx1, fuel_starty1, purple)
-            botBox = fuel_box(wrong2, fuel_startx3, fuel_starty3, purple)
-        elif AnswerQuad == 2:
-            botBox = fuel_box(answer_num1*answer_num2, fuel_startx3, fuel_starty3, purple)
-            midBox = fuel_box(wrong1, fuel_startx2, fuel_starty2, purple)
-            topBox = fuel_box(wrong2, fuel_startx1, fuel_starty1, purple)
-
-        fuel_startx1 += fuel_speed
-        fuel_startx2 += fuel_speed
-        fuel_startx3 += fuel_speed
-
-        if player.hit_object((fuel_startx1 - 110, fuel_startx1 + 110), (fuel_starty1 - 50, fuel_starty1 + 100)):
-            hit = 0
-        elif player.hit_object((fuel_startx2 - 110, fuel_startx2 + 110), (fuel_starty2 - 50, fuel_starty2 + 100)):
-            hit = 1
-        elif player.hit_object((fuel_startx3 - 110, fuel_startx3 + 110), (fuel_starty3 - 50, fuel_starty3 + 100)):
-            hit = 2
-        else:
-            hit = -1
-
-        fuelGone = (fuel_startx1 + fuel_startx2 + fuel_startx3 < -600)
-        if(hit+1 or fuelGone):
+        if(hit+1 or fuel_gone):
             trigger = True
-            if(hit == AnswerQuad):
+            if hit == answer_section:
                 score += points
                 if score > highscore:
                     highscore = score
@@ -362,7 +353,7 @@ def game_loop(difficulty_settings):
                 fuel_speed = fuel_speed*boxspeed
             else:
                 pygame.mixer.Sound.play(crash_sound)
-                lives -= 1
+                #lives -= 1
                 hit = -1
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
@@ -371,7 +362,7 @@ def game_loop(difficulty_settings):
         display_text("Score: " + str(score), i_red, 40, (50, 650), False)
         display_text("Highscore: " + str(highscore), i_red, 25, (50, 600), False)
         display_text(str(lives) + " Lives", i_red, 50, (1000, 650), False)
-        display_text(str(answer_num1) + " x " + str(answer_num2) + " = ?", i_red, 80, (display_width/2, 75))
+        display_text(str(numbers[-1]) + " x " + str(numbers[-2]) + " = ?", i_red, 80, (display_width/2, 75))
 
         pygame.display.update()
         clock.tick(30)
