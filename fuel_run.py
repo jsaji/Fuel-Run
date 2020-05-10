@@ -8,8 +8,8 @@ pygame.init()
 pygame.font.init()
 pygame.mixer.pre_init(44100, 16, 2, 4096)
 
-gameIcon = pygame.image.load("Resources/Images/Icon.png")
-pygame.display.set_icon(gameIcon)
+game_icon = pygame.image.load("Resources/Images/Icon.png")
+pygame.display.set_icon(game_icon)
 display_width, display_height = 1280, 720
 screen = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Fuel Run")
@@ -38,17 +38,12 @@ highscore = 0
 
 player = Player(screen, 25)
 
+# For each difficulty, the following are stored: maximum time table no., speed of the fuel boxes, points gained from each correct answer, and the no. of lives
+difficulty = {'easy':[6, 1.01, 5, 3], 'medium': [12, 1.02, 10, 4], 'hard': [16, 1.03, 15, 5]}
 section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
 cloud_speed = (-20, -10)
 
-def LevelSelect():
-    easy, medium, hard = 6, 12, 16
-    easyspeed, mediumspeed, hardspeed = 1.01, 1.02, 1.03
-    easyscore, mediumscore, hardscore = 10, 15, 20
-    easylives, mediumlives, hardlives = 5, 4, 3
-    #easy = {6, 1.01, 5, 3}
-    #medium = {12, 1.02, 10, 4}
-    #hard = {16, 1.03, 15, 5}
+def level_select():
 
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
 
@@ -65,62 +60,51 @@ def LevelSelect():
                 elif 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
                     pygame.mixer.Sound.play(button_sound)
                     while (keep_going):
-                        keep_going = game_loop(easy, easyspeed, easyscore, easylives)
+                        keep_going = game_loop(difficulty['easy'])
                     return False
                 elif 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
                     pygame.mixer.Sound.play(button_sound)
                     while (keep_going):
-                        keep_going = game_loop(medium, mediumspeed, mediumscore, mediumlives)
+                        keep_going = game_loop(difficulty['medium'])
                     return False
                 elif 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
                     pygame.mixer.Sound.play(button_sound)
                     while (keep_going):
-                        keep_going = game_loop(hard, hardspeed, hardscore, hardlives)
+                        keep_going = game_loop(difficulty['hard'])
                     return False
                 
         screen.fill(s_blue)
-        
         for cloud in clouds: cloud.update()
 
-        diff_button_size = 40
         display_text("Choose difficulty:", i_red, 50, (display_width/2, display_height/4.5))
-        
+        diff_button_size = 40
         mouse = pygame.mouse.get_pos()
         keep_going = True
 
-        if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
-            pygame.draw.rect(screen, csi_blue, (40, 40, 160, 60))
-        else:
-            pygame.draw.rect(screen, button_red, (40, 40, 160, 60))
+        btn_hover = 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (40, 40, 160, 60))
         display_text("Home", a_blue, 30, (65, 60), False)
         
-        if 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
-            pygame.draw.rect(screen, buttonover_green, (515, 250, 250, 80))
-        else:
-            pygame.draw.rect(screen, button_green, (515, 250, 250, 80))
+        btn_hover = 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250
+        pygame.draw.rect(screen, buttonover_green*btn_hover or button_green*(not btn_hover), (515, 250, 250, 80))
         display_text("Easy", a_blue, diff_button_size, (display_width/2, 290))
 
-        if 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
-            pygame.draw.rect(screen, buttonover_yellow, (515, 400, 250, 80))
-        else:
-            pygame.draw.rect(screen, button_yellow, (515, 400, 250, 80))
+        btn_hover = 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400
+        pygame.draw.rect(screen, buttonover_yellow*btn_hover or button_yellow*(not btn_hover), (515, 400, 250, 80))
         display_text("Medium", a_blue, diff_button_size, (display_width/2, 440))
         
-        if 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
-            pygame.draw.rect(screen, buttonover_red, (515, 550, 250, 80))
-        else:
-            pygame.draw.rect(screen, button_red, (515, 550, 250, 80))
+        btn_hover = 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550
+        pygame.draw.rect(screen, buttonover_red*btn_hover or button_red*(not btn_hover), (515, 550, 250, 80))
         display_text("Hard", a_blue, diff_button_size, (display_width/2, 590))
-            
+
         pygame.display.update()
         clock.tick(30)
             
-def GameOver(score):
+def game_over(score):
     global highscore
     pygame.mixer.Sound.play(gameover_sound)
     
     clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
-    scorefont = set_font(70)
     rotation = 1
     player.reset()
 
@@ -150,24 +134,19 @@ def GameOver(score):
         
         mouse = pygame.mouse.get_pos()
 
-        if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
-            pygame.draw.rect(screen, buttonover_green, (520, 310, 240, 120))
-        else:
-            pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
+        btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310
+        pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 310, 240, 120))
         pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
-        if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
-            pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
-        else:
-            pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-
+        btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
         display_text("Home", a_blue, 45, (display_width/2, 555))
         #player.rotate(rotation)
 
         pygame.display.update()
         clock.tick(30)
 
-def MainMenu():
+def main_menu():
     pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
     pygame.mixer.music.play(-1)
     
@@ -198,7 +177,7 @@ def MainMenu():
                 mouse = pygame.mouse.get_pos()
                 if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
                     pygame.mixer.Sound.play(button_sound)
-                    if (not LevelSelect()):
+                    if (not level_select()):
                         pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
                         pygame.mixer.music.play(-1)
                 if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
@@ -214,16 +193,13 @@ def MainMenu():
         display_text("Fuel Run", i_red, 175, (display_width/2, display_height/4.5))
         
         mouse = pygame.mouse.get_pos()
-        if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
-            pygame.draw.rect(screen, buttonover_green, (520, 310, 240, 120))
-        else:
-            pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
+
+        btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310
+        pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 310, 240, 120))
         pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
-        if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
-            pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
-        else:
-            pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
+        btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
         display_text("Quit", a_blue, 60, (display_width/2, 555))
         
         display_text("High Score: " + str(highscore), i_red, 45, (50, 650), False)
@@ -255,16 +231,12 @@ def paused():
         
         mouse = pygame.mouse.get_pos()
         
-        if (520 + 240 > mouse[0] and mouse[0] > 520) and (310 + 120 > mouse[1] and mouse[1] > 310):
-            pygame.draw.rect(screen, buttonover_green, (520, 310, 240, 120))
-        else:
-            pygame.draw.rect(screen, button_red, (520, 310, 240, 120))
+        btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310
+        pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 310, 240, 120))
         pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
 
-        if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
-            pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
-        else:
-            pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
+        btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
         display_text("Home", a_blue, 45, (560, 535))
         
         pygame.display.update()
@@ -282,8 +254,8 @@ def display_text(text, colour, size, pos, is_centered=True):
         disp_pos.center = (int(pos[0]), int(pos[1]))
     screen.blit(text_surface, disp_pos)
 
-def generateNumbers(difficulty):
-    num1, num2 = random.randint(1, difficulty), random.randint(1, difficulty)
+def generate_numbers(time_table):
+    num1, num2 = random.randint(1, time_table), random.randint(1, time_table)
     answer = num1 * num2
     wrong1, wrong2 = answer, answer
     while (wrong1 == answer):
@@ -292,11 +264,11 @@ def generateNumbers(difficulty):
         wrong2 = abs(num1 + random.randint(2, 3)) * abs(num2 - random.randint(1, 2))
     return num1, num2, wrong1, wrong2
 
-def fuelBox(number, fuel_startx, fuel_starty, color):
+def fuel_box(number, fuel_startx, fuel_starty, color):
     pygame.draw.rect(screen, color, [int(fuel_startx), int(fuel_starty), 100, 100])
     display_text(str(number), a_blue, 35, (fuel_startx + 55, fuel_starty + 55))
 
-def game_loop(difficulty, boxspeed, scorepoints, lifesum):
+def game_loop(difficulty_settings):
     global highscore
     global pause
     trigger = True
@@ -307,9 +279,15 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     x_change, y_change = 0, 0
     fuel_speed = -10
     score = 0
+    time_table = difficulty_settings[0]
+    boxspeed = difficulty_settings[1]
+    points = difficulty_settings[2]
+    lives = difficulty_settings[3]
+    
+
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     game_exit = False
-    lives = lifesum
+    
 
     while not game_exit:
         for event in pygame.event.get():
@@ -343,22 +321,22 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         if (trigger):
             fuel_startx1, fuel_startx2, fuel_startx3 = random.randint(1300, 1350), random.randint(1300, 1350), random.randint(1300, 1350)
             fuel_starty1, fuel_starty2, fuel_starty3 = random.randint(100, 120), random.randint(300, 320), random.randint(500, 520)
-            answer_num1, answer_num2, wrong1, wrong2 = generateNumbers(difficulty)
+            answer_num1, answer_num2, wrong1, wrong2 = generate_numbers(time_table)
             AnswerQuad = random.randint(0, 2)
             trigger = False
 
         if AnswerQuad == 0:
-            topBox = fuelBox(answer_num1*answer_num2, fuel_startx1, fuel_starty1, purple)
-            midBox = fuelBox(wrong1, fuel_startx2, fuel_starty2, purple)
-            botBox = fuelBox(wrong2, fuel_startx3, fuel_starty3, purple)
+            topBox = fuel_box(answer_num1*answer_num2, fuel_startx1, fuel_starty1, purple)
+            midBox = fuel_box(wrong1, fuel_startx2, fuel_starty2, purple)
+            botBox = fuel_box(wrong2, fuel_startx3, fuel_starty3, purple)
         elif AnswerQuad == 1:
-            midBox = fuelBox(answer_num1*answer_num2, fuel_startx2, fuel_starty2, purple)
-            topBox = fuelBox(wrong1, fuel_startx1, fuel_starty1, purple)
-            botBox = fuelBox(wrong2, fuel_startx3, fuel_starty3, purple)
+            midBox = fuel_box(answer_num1*answer_num2, fuel_startx2, fuel_starty2, purple)
+            topBox = fuel_box(wrong1, fuel_startx1, fuel_starty1, purple)
+            botBox = fuel_box(wrong2, fuel_startx3, fuel_starty3, purple)
         elif AnswerQuad == 2:
-            botBox = fuelBox(answer_num1*answer_num2, fuel_startx3, fuel_starty3, purple)
-            midBox = fuelBox(wrong1, fuel_startx2, fuel_starty2, purple)
-            topBox = fuelBox(wrong2, fuel_startx1, fuel_starty1, purple)
+            botBox = fuel_box(answer_num1*answer_num2, fuel_startx3, fuel_starty3, purple)
+            midBox = fuel_box(wrong1, fuel_startx2, fuel_starty2, purple)
+            topBox = fuel_box(wrong2, fuel_startx1, fuel_starty1, purple)
 
         fuel_startx1 += fuel_speed
         fuel_startx2 += fuel_speed
@@ -377,7 +355,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         if(hit+1 or fuelGone):
             trigger = True
             if(hit == AnswerQuad):
-                score += scorepoints
+                score += points
                 if score > highscore:
                     highscore = score
                 pygame.mixer.Sound.play(coll_sound)
@@ -388,7 +366,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 hit = -1
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
-                    return GameOver(score)
+                    return game_over(score)
 
         display_text("Score: " + str(score), i_red, 40, (50, 650), False)
         display_text("Highscore: " + str(highscore), i_red, 25, (50, 600), False)
@@ -398,7 +376,7 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
         pygame.display.update()
         clock.tick(30)
 
-MainMenu()
+main_menu()
 
 pygame.quit()
 sys.exit()
