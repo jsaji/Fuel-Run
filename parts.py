@@ -41,10 +41,11 @@ class FuelBox:
         self.x_pos = 0
         self.y_pos = 0
 
-    def reset(self, number):
+    def reset(self, number, speed):
         self.x_pos = self.screen.get_size()[0] + random.randint(30, 70)
         self.y_pos = random.randint(self.pos_range[0], self.pos_range[1])
         self.number = number
+        self.speed = speed
 
     def draw(self):
         self.x_pos += self.speed

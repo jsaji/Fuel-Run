@@ -33,8 +33,8 @@ coll_sound = pygame.mixer.Sound("Resources/Sound/RightAnswer.wav")
 button_sound = pygame.mixer.Sound("Resources/Sound/ButtonPress.wav")
 gameover_sound = pygame.mixer.Sound("Resources/Sound/GameOver.wav")
 
-pause = False
-highscore = 0
+PAUSE = False
+HIGHSCORE = 0
 
 player = Player(screen, 25)
 
@@ -101,7 +101,7 @@ def level_select():
         clock.tick(30)
             
 def game_over(score):
-    global highscore
+    global HIGHSCORE
     pygame.mixer.Sound.play(gameover_sound)
     
     clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
@@ -126,9 +126,9 @@ def game_over(score):
 
         for cloud in clouds: cloud.draw()
 
-        if highscore > score:
-            highscore = score
-            display_text("New Highscore: "+str(highscore)+"!", i_red, 70, (display_width/2, display_height/4.5))
+        if HIGHSCORE > score:
+            HIGHSCORE = score
+            display_text("New Highscore: "+str(HIGHSCORE)+"!", i_red, 70, (display_width/2, display_height/4.5))
         else:
             display_text("Score: "+str(score)+"!", i_red, 70, (display_width/2, display_height/4.5))
         
@@ -202,17 +202,17 @@ def main_menu():
         pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
         display_text("Quit", a_blue, 60, (display_width/2, 555))
         
-        display_text("High Score: " + str(highscore), i_red, 45, (50, 650), False)
+        display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
         
         pygame.display.update()
         clock.tick(30)
 
 def unpause():
-    global pause
-    pause = False
+    global PAUSE
+    PAUSE = False
 
 def paused():
-    while pause:
+    while PAUSE:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -264,23 +264,19 @@ def generate_numbers(time_table):
         wrong2 = abs(num1 + random.randint(2, 3)) * abs(num2 - random.randint(1, 2))
     return [wrong1, wrong2, num1, num2]
 
-def fuel_box(number, fuel_startx, fuel_starty, color):
-    pygame.draw.rect(screen, color, [int(fuel_startx), int(fuel_starty), 100, 100])
-    display_text(str(number), a_blue, 35, (fuel_startx + 55, fuel_starty + 55))
-
-def reset_fuel_boxes(fuel_boxes, answer_section, numbers): 
+def reset_fuel_boxes(fuel_boxes, answer_section, numbers, fuel_speed):
     j = 0
     for i in range(len(fuel_boxes)):
         if i == answer_section:
-            fuel_boxes[i].reset(numbers[-1]*numbers[-2])
+            fuel_boxes[i].reset(numbers[-1]*numbers[-2], fuel_speed)
         else:
-            fuel_boxes[i].reset(numbers[j])
+            fuel_boxes[i].reset(numbers[j], fuel_speed)
             j += 1
     return fuel_boxes
 
 def game_loop(difficulty_settings):
-    global highscore
-    global pause
+    global PAUSE
+    global HIGHSCORE
     trigger = True
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
@@ -314,7 +310,7 @@ def game_loop(difficulty_settings):
                 if event.key == pygame.K_UP:
                     y_change = -1
                 if event.key == pygame.K_ESCAPE:
-                    pause = True
+                    PAUSE = True
                     go_back = paused()
                     if(go_back):
                         return False
@@ -331,11 +327,10 @@ def game_loop(difficulty_settings):
         if (trigger):
             numbers = generate_numbers(time_table)
             answer_section = random.randint(0, 2)
-            fuel_boxes = reset_fuel_boxes(fuel_boxes, answer_section, numbers)
+            fuel_boxes = reset_fuel_boxes(fuel_boxes, answer_section, numbers, fuel_speed)
             trigger = False
             
         hit = -1
-        fuel_gone = False
         for i in range(len(fuel_boxes)):
             fuel_boxes[i].draw()
             fuel_gone = fuel_boxes[i].check_bounds()
@@ -343,24 +338,23 @@ def game_loop(difficulty_settings):
             if player.hit_object((x - 110, x + 110), (y - 50, y + 100)):
                 hit = i
 
+        fuel_gone = False
         if(hit+1 or fuel_gone):
             trigger = True
             if hit == answer_section:
                 score += points
-                if score > highscore:
-                    highscore = score
+                if score > HIGHSCORE: HIGHSCORE = score
                 pygame.mixer.Sound.play(coll_sound)
                 fuel_speed = fuel_speed*boxspeed
             else:
                 pygame.mixer.Sound.play(crash_sound)
-                #lives -= 1
-                hit = -1
+                lives -= 1
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
                     return game_over(score)
 
         display_text("Score: " + str(score), i_red, 40, (50, 650), False)
-        display_text("Highscore: " + str(highscore), i_red, 25, (50, 600), False)
+        display_text("Highscore: " + str(HIGHSCORE), i_red, 25, (50, 600), False)
         display_text(str(lives) + " Lives", i_red, 50, (1000, 650), False)
         display_text(str(numbers[-1]) + " x " + str(numbers[-2]) + " = ?", i_red, 80, (display_width/2, 75))
 
