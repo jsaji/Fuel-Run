@@ -92,7 +92,7 @@ def LevelSelect():
             pygame.draw.rect(screen, csi_blue, (40, 40, 160, 60))
         else:
             pygame.draw.rect(screen, button_red, (40, 40, 160, 60))
-        display_text("Home", a_blue, 30, (65, 60))
+        display_text("Home", a_blue, 30, (65, 60), False)
         
         if 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
             pygame.draw.rect(screen, buttonover_green, (515, 250, 250, 80))
@@ -161,7 +161,7 @@ def GameOver(score):
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
 
-        display_text("Home", a_blue, 45, (560, 535))
+        display_text("Home", a_blue, 45, (display_width/2, 555))
         #player.rotate(rotation)
 
         pygame.display.update()
@@ -226,7 +226,7 @@ def MainMenu():
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
         display_text("Quit", a_blue, 60, (display_width/2, 555))
         
-        MainHighScoreDisplay(highscore)
+        display_text("High Score: " + str(highscore), i_red, 45, (50, 650), False)
         
         pygame.display.update()
         clock.tick(30)
@@ -273,37 +273,14 @@ def paused():
 def set_font(size):
     return pygame.font.Font("Resources/BULKYPIX.ttf", size)
 
-def display_text(text, colour, size, pos):
+def display_text(text, colour, size, pos, is_centered=True):
     font = set_font(size)
     text_surface = font.render(text, True, colour) #i_red
-    text_rect = text_surface.get_rect()
-    text_rect.center = (int(pos[0]), int(pos[1]))
-    screen.blit(text_surface, text_rect)
-
-def ScoreDisplay(score):
-    scorefont = set_font(40)
-    ScoreCount = scorefont.render("Score: " + str(score), True, i_red)
-    screen.blit(ScoreCount, (50, 650))
-
-def HighScoreDisplay(highscore):
-    highscorefont = set_font(25)
-    HighScoreCount = highscorefont.render("High Score: " + str(highscore), True, i_red)
-    screen.blit(HighScoreCount, (50, 600))
-
-def MainHighScoreDisplay(highscore):
-    highscorefont = set_font(45)
-    HighScoreCount = highscorefont.render("High Score: " + str(highscore), True, i_red)
-    screen.blit(HighScoreCount, (50, 650))
-
-def LivesDisplay(lives):
-    lifefont = set_font(50)
-    LifeCount = lifefont.render(str(lives)+" Lives", True, i_red)
-    screen.blit(LifeCount, (1000, 650))
-
-def Question(number1, number2):
-    ingame = set_font(80)
-    Line = ingame.render(str(number1)+" x "+str(number2)+" = ?", True, i_red)
-    screen.blit(Line, (400, 50))
+    disp_pos = pos
+    if is_centered:
+        disp_pos= text_surface.get_rect()
+        disp_pos.center = (int(pos[0]), int(pos[1]))
+    screen.blit(text_surface, disp_pos)
 
 def generateNumbers(difficulty):
     num1, num2 = random.randint(1, difficulty), random.randint(1, difficulty)
@@ -412,13 +389,11 @@ def game_loop(difficulty, boxspeed, scorepoints, lifesum):
                 if lives == 0:
                     pygame.mixer.Sound.play(gameover_sound)
                     return GameOver(score)
-            
-        HighScoreDisplay(highscore)
-        ScoreDisplay(score)
-        LivesDisplay(lives)
-        Question(answer_num1, answer_num2)
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
+
+        display_text("Score: " + str(score), i_red, 40, (50, 650), False)
+        display_text("Highscore: " + str(highscore), i_red, 25, (50, 600), False)
+        display_text(str(lives) + " Lives", i_red, 50, (1000, 650), False)
+        display_text(str(answer_num1) + " x " + str(answer_num2) + " = ?", i_red, 80, (display_width/2, 75))
 
         pygame.display.update()
         clock.tick(30)
