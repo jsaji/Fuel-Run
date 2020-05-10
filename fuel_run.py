@@ -64,65 +64,53 @@ def LevelSelect():
                     return False
                 elif 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
                     pygame.mixer.Sound.play(button_sound)
-                    while (keepGoing):
-                        keepGoing = game_loop(easy, easyspeed, easyscore, easylives)
+                    while (keep_going):
+                        keep_going = game_loop(easy, easyspeed, easyscore, easylives)
                     return False
                 elif 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
                     pygame.mixer.Sound.play(button_sound)
-                    while (keepGoing):
-                        keepGoing = game_loop(medium, mediumspeed, mediumscore, mediumlives)
+                    while (keep_going):
+                        keep_going = game_loop(medium, mediumspeed, mediumscore, mediumlives)
                     return False
                 elif 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
                     pygame.mixer.Sound.play(button_sound)
-                    while (keepGoing):
-                        keepGoing = game_loop(hard, hardspeed, hardscore, hardlives)
+                    while (keep_going):
+                        keep_going = game_loop(hard, hardspeed, hardscore, hardlives)
                     return False
                 
         screen.fill(s_blue)
         
         for cloud in clouds: cloud.update()
 
-        buttontext = set_font(40)
-        diffchoose = set_font(50)
-        DiffTextSurf, DiffTextRect = text_objects("Choose difficulty:", diffchoose)
-        DiffTextRect.center = (int(display_width/2), int(display_height/4.5))
-        screen.blit(DiffTextSurf, DiffTextRect)
+        diff_button_size = 40
+        display_text("Choose difficulty:", i_red, 50, (display_width/2, display_height/4.5))
         
         mouse = pygame.mouse.get_pos()
-        keepGoing = True
+        keep_going = True
 
         if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
             pygame.draw.rect(screen, csi_blue, (40, 40, 160, 60))
         else:
             pygame.draw.rect(screen, button_red, (40, 40, 160, 60))
-        hometext = set_font(30)
-        Homebutton = hometext.render("Home", True, a_blue)
-        screen.blit(Homebutton, (65, 60))
+        display_text("Home", a_blue, 30, (65, 60))
         
         if 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
             pygame.draw.rect(screen, buttonover_green, (515, 250, 250, 80))
         else:
             pygame.draw.rect(screen, button_green, (515, 250, 250, 80))
-        EasyTextSurf, EasyTextRect = levelselect_text("Easy", buttontext)
-        EasyTextRect.center = (int(display_width/2), 290)
-        screen.blit(EasyTextSurf, EasyTextRect)
+        display_text("Easy", a_blue, diff_button_size, (display_width/2, 290))
 
         if 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
             pygame.draw.rect(screen, buttonover_yellow, (515, 400, 250, 80))
         else:
             pygame.draw.rect(screen, button_yellow, (515, 400, 250, 80))
-        MediumTextSurf, MediumTextRect = levelselect_text("Medium", buttontext)
-        MediumTextRect.center = (int(display_width/2), 440)
-        screen.blit(MediumTextSurf, MediumTextRect)
+        display_text("Medium", a_blue, diff_button_size, (display_width/2, 440))
         
         if 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
             pygame.draw.rect(screen, buttonover_red, (515, 550, 250, 80))
         else:
             pygame.draw.rect(screen, button_red, (515, 550, 250, 80))
-
-        HardTextSurf, HardTextRect = levelselect_text("Hard", buttontext)
-        HardTextRect.center = (int(display_width/2), 590)
-        screen.blit(HardTextSurf, HardTextRect)
+        display_text("Hard", a_blue, diff_button_size, (display_width/2, 590))
             
         pygame.display.update()
         clock.tick(30)
@@ -156,13 +144,9 @@ def GameOver(score):
 
         if highscore > score:
             highscore = score
-            HighScoreTextSurf, HighScoreTextRect = text_objects("New Highscore: "+str(highscore)+"!", scorefont)
-            HighScoreTextRect.center = (int(display_width/2),int(display_height/4.5))
-            screen.blit(HighScoreTextSurf, HighScoreTextRect)
+            display_text("New Highscore: "+str(highscore)+"!", i_red, 70, (display_width/2, display_height/4.5))
         else:
-            ScoreTextSurf, ScoreTextRect = text_objects("Score: "+str(score)+"!", scorefont)
-            ScoreTextRect.center = (int(display_width/2),int(display_height/4.5))
-            screen.blit(ScoreTextSurf, ScoreTextRect)
+            display_text("Score: "+str(score)+"!", i_red, 70, (display_width/2, display_height/4.5))
         
         mouse = pygame.mouse.get_pos()
 
@@ -176,10 +160,8 @@ def GameOver(score):
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-        quittext = set_font(45)
-        Quitbutton = quittext.render("Home", True, a_blue)
-        screen.blit(Quitbutton, (560, 535))
-        
+
+        display_text("Home", a_blue, 45, (560, 535))
         #player.rotate(rotation)
 
         pygame.display.update()
@@ -229,10 +211,7 @@ def MainMenu():
         for cloud in clouds: cloud.update()
         player.move(x_change, y_change)
 
-        message = set_font(175)
-        TextSurf, TextRect = text_objects("Fuel Run", message)
-        TextRect.center = (int(display_width/2), int(display_height/4.5))
-        screen.blit(TextSurf, TextRect)
+        display_text("Fuel Run", i_red, 175, (display_width/2, display_height/4.5))
         
         mouse = pygame.mouse.get_pos()
         if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
@@ -245,9 +224,7 @@ def MainMenu():
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-        exittext = set_font(60)
-        QuitButton = exittext.render("Quit", True, a_blue)
-        screen.blit(QuitButton, (560, 525))
+        display_text("Quit", a_blue, 60, (display_width/2, 555))
         
         MainHighScoreDisplay(highscore)
         
@@ -274,10 +251,7 @@ def paused():
                     return True
 
         screen.fill(purple)
-        message = set_font(115)
-        TextSurf, TextRect = paused_text("Paused", message)
-        TextRect.center = (int(display_width/2), int(display_height/3))
-        screen.blit(TextSurf, TextRect)
+        display_text("Paused", button_yellow, 115, (display_width/2, display_height/3))
         
         mouse = pygame.mouse.get_pos()
         
@@ -291,28 +265,20 @@ def paused():
             pygame.draw.rect(screen, csi_blue, (540, 500, 200, 100))
         else:
             pygame.draw.rect(screen, button_red, (540, 500, 200, 100))
-
-        buttontext = set_font(45)
-        Quitbutton = buttontext.render("Home", True, a_blue)
-        screen.blit(Quitbutton, (560, 535))
+        display_text("Home", a_blue, 45, (560, 535))
         
         pygame.display.update()
         clock.tick(30)
 
 def set_font(size):
     return pygame.font.Font("Resources/BULKYPIX.ttf", size)
-def text_objects(text, font):
-    textSurface = font.render(text, True, i_red)
-    return textSurface, textSurface.get_rect()
-def paused_text(text, font):
-    textSurface = font.render(text, True, button_yellow)
-    return textSurface, textSurface.get_rect()
-def levelselect_text(text, font):
-    textSurface = font.render(text, True, a_blue)
-    return textSurface, textSurface.get_rect()
-def box_text(text, font):
-    textSurface = font.render(text, True, a_blue)
-    return textSurface, textSurface.get_rect()
+
+def display_text(text, colour, size, pos):
+    font = set_font(size)
+    text_surface = font.render(text, True, colour) #i_red
+    text_rect = text_surface.get_rect()
+    text_rect.center = (int(pos[0]), int(pos[1]))
+    screen.blit(text_surface, text_rect)
 
 def ScoreDisplay(score):
     scorefont = set_font(40)
@@ -351,10 +317,7 @@ def generateNumbers(difficulty):
 
 def fuelBox(number, fuel_startx, fuel_starty, color):
     pygame.draw.rect(screen, color, [int(fuel_startx), int(fuel_starty), 100, 100])
-    boxtext = set_font(35)
-    TextSurf, TextRect = box_text(str(number), boxtext)
-    TextRect.center = (int(fuel_startx + 55), int(fuel_starty + 55))
-    screen.blit(TextSurf, TextRect)
+    display_text(str(number), a_blue, 35, (fuel_startx + 55, fuel_starty + 55))
 
 def game_loop(difficulty, boxspeed, scorepoints, lifesum):
     global highscore
