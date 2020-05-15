@@ -73,11 +73,11 @@ class Player:
         self.draw()
         self.rotation = 0
 
-    def move(self, move_x, move_y):
-        if move_x > 0: self.x_pos += self.move_speed
-        elif move_x < 0: self.x_pos -= self.move_speed
-        if move_y > 0: self.y_pos += self.move_speed
-        elif move_y < 0: self.y_pos -= self.move_speed
+    def move(self, move_direction):
+        if move_direction[0] > 0: self.x_pos += self.move_speed
+        elif move_direction[0] < 0: self.x_pos -= self.move_speed
+        if move_direction[1] > 0: self.y_pos += self.move_speed
+        elif move_direction[1] < 0: self.y_pos -= self.move_speed
         self.draw()
 
     def rotate(self, rotation):

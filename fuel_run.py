@@ -34,10 +34,8 @@ coll_sound = pygame.mixer.Sound("Resources/Sound/RightAnswer.wav")
 button_sound = pygame.mixer.Sound("Resources/Sound/ButtonPress.wav")
 gameover_sound = pygame.mixer.Sound("Resources/Sound/GameOver.wav")
 
-PAUSE = False
-HIGHSCORE = 0
 leaderboard_list = open("leaderboard.txt", "a+")
-
+leaderboard_list.close()
 player = Player(screen, 25)
 
 # For each difficulty: maximum time table no., speed of  fuel boxes, points gained from each correct answer, and no. of lives
@@ -88,14 +86,17 @@ def get_highscore():
     return top_score
 
 def leaderboard():
-
-    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     scores = get_highscores()
+    move_direction = [0, 0]
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                move_direction = player_keydown(event, move_direction)
+            elif event.type == pygame.KEYUP:
+                move_direction = player_keyup(event, move_direction)
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
                 if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
@@ -112,6 +113,7 @@ def leaderboard():
         screen.fill(s_blue)
 
         for cloud in clouds: cloud.draw()
+        player.move(move_direction)
 
         display_text("Leaderboard", i_red, 70, (display_width/2, display_height/6))
 
@@ -129,15 +131,17 @@ def leaderboard():
         clock.tick(30)
 
 def level_select():
-
-    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
-
+    move_direction = [0, 0]
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.KEYDOWN:
+                move_direction = player_keydown(event, move_direction)
+            elif event.type == pygame.KEYUP:
+                move_direction = player_keyup(event, move_direction)
+            elif event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
                 if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
                     pygame.mixer.Sound.play(button_sound)
@@ -160,7 +164,7 @@ def level_select():
                 
         screen.fill(s_blue)
         for cloud in clouds: cloud.draw()
-
+        player.move(move_direction)
         display_text("Choose difficulty:", i_red, 50, (display_width/2, display_height/4.5))
         diff_button_size = 40
         mouse = pygame.mouse.get_pos()
@@ -186,13 +190,12 @@ def level_select():
         clock.tick(30)
             
 def game_over(score):
-    global HIGHSCORE
     if score > HIGHSCORE: text = "New Highscore: "
     else: text = "Score: "
     prompt = "Done?"
     pygame.mixer.Sound.play(gameover_sound)
     
-    clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
+    clouds_down = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
     rotation = 1
     player.reset()
     name = ""
@@ -207,10 +210,12 @@ def game_over(score):
                 mouse = pygame.mouse.get_pos()
                 if name_entered and 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
                     pygame.mixer.Sound.play(button_sound)
+                    for cloud in clouds: cloud.reset()
                     return True
                 elif 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
                     if name_entered:
                         pygame.mixer.Sound.play(button_sound)
+                        for cloud in clouds: cloud.reset()
                         return False
                     else:
                         pygame.mixer.Sound.play(button_sound)
@@ -227,9 +232,9 @@ def game_over(score):
 
         screen.fill(s_blue)
 
-        for cloud in clouds: cloud.draw()
+        for cloud in clouds_down: cloud.draw()
 
-        display_text(text+str(score)+"!", i_red, 80, (display_width/2, display_height/5))
+        display_text(text+str(score)+"!", i_red, 70, (display_width/2, display_height/5))
         
         mouse = pygame.mouse.get_pos()
 
@@ -252,32 +257,26 @@ def game_over(score):
         clock.tick(30)
 
 def main_menu():
+    global HIGHSCORE
+    global clouds
+    HIGHSCORE = get_highscore()
     pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
     pygame.mixer.music.play(-1)
     
-    x_change, y_change = 0, 0
+    move_direction = [0, 0]
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     player.reset()
 
-    while True:
+    MAIN_MENU = True
+    while MAIN_MENU:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    x_change = -1
-                if event.key == pygame.K_RIGHT:
-                    x_change = 1
-                if event.key == pygame.K_DOWN:
-                    y_change = 1
-                if event.key == pygame.K_UP:
-                    y_change = -1
+                move_direction = player_keydown(event, move_direction)
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    x_change = 0
-                if event.key == pygame.K_DOWN or event.key == pygame.K_UP:
-                    y_change = 0
+                move_direction = player_keyup(event, move_direction)
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
                 if 520 + 240 > mouse[0] and mouse[0] > 520 and 250 + 120 > mouse[1] and mouse[1] > 250:
@@ -296,7 +295,7 @@ def main_menu():
         screen.fill(s_blue)
         
         for cloud in clouds: cloud.draw()
-        player.move(x_change, y_change)
+        player.move(move_direction)
 
         display_text("Fuel Run", i_red, 175, (display_width/2, display_height/5))
         
@@ -348,7 +347,7 @@ def paused():
 
         btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500
         pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
-        display_text("Home", a_blue, 45, (560, 535))
+        display_text("Home", a_blue, 45, (display_width/2, 535))
         
         pygame.display.update()
         clock.tick(30)
@@ -382,10 +381,29 @@ def reset_fuel_boxes(fuel_boxes, answer_section, numbers, fuel_speed):
             j += 1
     return fuel_boxes
 
+def player_keydown(event, direction):
+    if event.key == pygame.K_LEFT:
+        direction[0] = -1
+    if event.key == pygame.K_RIGHT:
+        direction[0] = 1
+    if event.key == pygame.K_DOWN:
+        direction[1] = 1
+    if event.key == pygame.K_UP:
+        direction[1] = -1
+    return direction
+
+def player_keyup(event, direction):
+    if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
+        direction[0] = 0
+    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+        direction[1] = 0
+    return direction
+
 def game_loop(difficulty_settings):
     global PAUSE
     global HIGHSCORE
     HIGHSCORE = get_highscore()
+    PAUSE = False
     trigger = True
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
@@ -393,7 +411,7 @@ def game_loop(difficulty_settings):
     fuel_boxes = [FuelBox(fuel_box_sections[i], 100, 35, screen) for i in range(3)]
 
     player.reset()
-    x_change, y_change = 0, 0
+    move_direction = [0, 0]
     fuel_speed = -10
     score = 0
     time_table = difficulty_settings[0]
@@ -401,7 +419,6 @@ def game_loop(difficulty_settings):
     points = difficulty_settings[2]
     lives = difficulty_settings[3]
     
-    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     game_exit = False
 
     while not game_exit:
@@ -410,28 +427,18 @@ def game_loop(difficulty_settings):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    x_change = -1
-                if event.key == pygame.K_RIGHT:
-                    x_change = 1
-                if event.key == pygame.K_DOWN:
-                    y_change = 1
-                if event.key == pygame.K_UP:
-                    y_change = -1
                 if event.key == pygame.K_ESCAPE:
                     PAUSE = True
                     go_back = paused()
                     if(go_back):
                         return False
+                move_direction = player_keydown(event, move_direction)
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                    x_change = 0
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    y_change = 0
+                move_direction = player_keyup(event, move_direction)
 
         screen.fill(s_blue)
         for cloud in clouds: cloud.draw()
-        player.move(x_change, y_change)
+        player.move(move_direction)
 
         if (trigger):
             numbers = generate_numbers(time_table)
@@ -452,7 +459,6 @@ def game_loop(difficulty_settings):
             trigger = True
             if hit == answer_section:
                 score += points
-                if score > HIGHSCORE: HIGHSCORE = score
                 pygame.mixer.Sound.play(coll_sound)
                 fuel_speed = fuel_speed*boxspeed
             else:
@@ -463,7 +469,8 @@ def game_loop(difficulty_settings):
                     return game_over(score)
 
         display_text("Score: " + str(score), i_red, 40, (50, 650), False)
-        display_text("Highscore: " + str(HIGHSCORE), i_red, 25, (50, 600), False)
+        is_new = score > HIGHSCORE
+        display_text("Highscore: " + str(HIGHSCORE*(not is_new) + score*is_new), i_red, 25, (50, 600), False)
         display_text(str(lives) + " Lives", i_red, 50, (1000, 650), False)
         display_text(str(numbers[-1]) + " x " + str(numbers[-2]) + " = ?", i_red, 80, (display_width/2, 75))
 
