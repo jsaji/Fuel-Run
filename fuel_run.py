@@ -151,6 +151,8 @@ def main_menu():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 move_direction = player_keydown(event, move_direction)
+                if event.key == pygame.K_SPACE:
+                    player.change_style()
             if event.type == pygame.KEYUP:
                 move_direction = player_keyup(event, move_direction)
             if event.type == pygame.MOUSEBUTTONUP:
@@ -225,9 +227,11 @@ def leaderboard():
 
         display_text("Leaderboard", i_red, 70, (display_width/2, display_height/6))
 
-        i = 0
+        i = 1
         for score in scores:
-            display_text(score, i_red, 40, (display_width/2, display_height/5 + 40 + 50*i))
+            name, highscore = score.split()
+            display_text(name, i_red, 40, (350, display_height/5 + 50*i))
+            display_text(highscore, i_red, 40, (925, display_height/5 + 50*i))
             i = i + 1
 
         mouse = pygame.mouse.get_pos()
@@ -445,7 +449,7 @@ def game_over(score):
                         update_highscores(name, score)
                         prompt = "Home"
             if not name_entered and event.type == pygame.KEYDOWN:
-                if event.unicode.isalpha() and len(name) < 17:
+                if event.unicode.isalpha() and len(name) < 9:
                     name += event.unicode
                 elif event.key == pygame.K_BACKSPACE:
                     name = name[:-1]

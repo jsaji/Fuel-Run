@@ -64,14 +64,18 @@ class FuelBox:
     
 class Player:
     def __init__(self, screen, move_speed):
-        plane_choice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
-        self.img = pygame.image.load("Resources/Images/"+plane_choice[random.randint(0, 7)]+"Plane.png")
+        self.plane_choice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
+        self.img = pygame.image.load("Resources/Images/"+self.plane_choice[random.randint(0, 7)]+"Plane.png")
         self.screen = screen
         self.x_pos = int(self.screen.get_size()[0]/5)
         self.y_pos = int(self.screen.get_size()[1]/2)
         self.move_speed = move_speed
         self.draw()
         self.rotation = 0
+
+    def change_style(self):
+        self.plane_choice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
+        self.img = pygame.image.load("Resources/Images/"+self.plane_choice[random.randint(0, 7)]+"Plane.png")
 
     def move(self, move_direction):
         if move_direction[0] > 0: self.x_pos += self.move_speed
