@@ -45,27 +45,50 @@ difficulty = {'easy':[6, 1.01, 5, 3], 'medium': [12, 1.02, 10, 4], 'hard': [16, 
 section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
 cloud_speed = (-20, -10)
 
-def update_leaderboard(highscore):
+def update_highscores(highscore):
+    updated = False
     with open("leaderboard.txt", "r+") as f:
         scores = f.readlines()
-        empty = len(scores) == 0
-        if empty:
+        num_scores = len(scores)
+        if num_scores == 0:
             f.write(str(highscore)+"\n")
-        elif not empty and int(scores[0].strip("\n")) < highscore:
-            scores.insert(0, str(highscore)+"\n")
-            if len(scores) > 10: scores.pop()
+            updated = True
+        else:
+            index = 0
+            for index, item in enumerate(scores):
+                if highscore > int(item.strip("\n")):
+                    updated = True
+                    break
+            if not updated and num_scores < 10:
+                index = num_scores
+                updated = True
+            scores.insert(index, str(highscore)+"\n")
+            num_scores = num_scores + 1
+            if num_scores > 10: scores.pop()
             f.seek(0)
             f.writelines(scores)
+    return updated
 
-def get_leaderboard():
+def get_highscores():
+    out = []
     with open("leaderboard.txt", "r") as f:
-        scores = f.readlines()
-    return scores
+        for item in f.readlines():
+            out.append(item.strip("\n"))
+    if not out:
+        out.append("No highscores yet!")
+    return out
+
+def get_highscore():
+    try:
+        top_score = int(get_highscores()[0])
+    except ValueError:
+        return 0
+    return top_score
 
 def leaderboard():
 
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
-    scores = get_leaderboard()
+    scores = get_highscores()
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -90,11 +113,11 @@ def leaderboard():
 
         display_text("Leaderboard", i_red, 70, (display_width/2, display_height/6))
 
-        display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
+        #display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
 
         i = 1
         for score in scores:
-            display_text(str(score).strip("\n"), i_red, 25, (display_width/2, display_height/5 + 40*i), False)
+            display_text(score, i_red, 25, (display_width/2, display_height/5 + 40*i), False)
             i = i + 1
 
         mouse = pygame.mouse.get_pos()
@@ -163,7 +186,7 @@ def level_select():
         clock.tick(30)
             
 def game_over(score):
-    global HIGHSCORE
+    updated = update_highscores(score)
     pygame.mixer.Sound.play(gameover_sound)
     
     clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
@@ -188,9 +211,8 @@ def game_over(score):
 
         for cloud in clouds: cloud.draw()
 
-        if HIGHSCORE > score:
-            HIGHSCORE = score
-            display_text("New Highscore: "+str(HIGHSCORE)+"!", i_red, 70, (display_width/2, display_height/4.5))
+        if updated:
+            display_text("New Highscore: "+str(score)+"!", i_red, 70, (display_width/2, display_height/4.5))
         else:
             display_text("Score: "+str(score)+"!", i_red, 70, (display_width/2, display_height/4.5))
         
@@ -313,7 +335,7 @@ def paused():
 def display_text(text, colour, size, pos, is_centered=True):
     font = pygame.font.Font("Resources/BULKYPIX.ttf", size)
     text_surface = font.render(text, True, colour) #i_red
-    disp_pos = pos
+    disp_pos = (int(pos[0]), int(pos[1]))
     if is_centered:
         disp_pos = text_surface.get_rect()
         disp_pos.center = (int(pos[0]), int(pos[1]))
@@ -342,6 +364,7 @@ def reset_fuel_boxes(fuel_boxes, answer_section, numbers, fuel_speed):
 def game_loop(difficulty_settings):
     global PAUSE
     global HIGHSCORE
+    HIGHSCORE = get_highscore()
     trigger = True
     pygame.mixer.music.load("Resources/Sound/Bit Quest.mp3")
     pygame.mixer.music.play(-1)
