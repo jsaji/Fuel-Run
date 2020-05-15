@@ -420,7 +420,7 @@ def game_over(score):
     pygame.mixer.Sound.play(gameover_sound)
     
     clouds_down = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
-    rotation = 1
+    rotation = 10
     player.reset()
     name = ""
     name_entered = False
@@ -475,7 +475,7 @@ def game_over(score):
         pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
         display_text(prompt, a_blue, 45, (display_width/2, 555))
 
-        #player.rotate(rotation)
+        player.rotate(rotation)
 
         pygame.display.update()
         clock.tick(30)

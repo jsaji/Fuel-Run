@@ -66,12 +66,13 @@ class Player:
     def __init__(self, screen, move_speed):
         self.plane_choice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
         self.img = pygame.image.load("Resources/Images/"+self.plane_choice[random.randint(0, 7)]+"Plane.png")
+        self.orig = self.img
+        self.rotation = 0
         self.screen = screen
         self.x_pos = int(self.screen.get_size()[0]/5)
         self.y_pos = int(self.screen.get_size()[1]/2)
         self.move_speed = move_speed
         self.draw()
-        self.rotation = 0
 
     def change_style(self):
         self.plane_choice = ["Blue", "Green", "Mono", "Pink", "Red", "Retro", "Tech", "Purple", ]
@@ -84,8 +85,9 @@ class Player:
         elif move_direction[1] < 0: self.y_pos -= self.move_speed
         self.draw()
 
-    def rotate(self, rotation):
-        self.img = pygame.transform.rotate(self.img, rotation)
+    def rotate(self, rotate):
+        self.rotation = self.rotation + rotate
+        self.img = pygame.transform.rotate(self.orig, self.rotation)
         self.draw()
 
     def move_to(self, x_pos, y_pos):
@@ -94,6 +96,7 @@ class Player:
         self.draw()
 
     def reset(self):
+        self.img = self.orig
         self.x_pos = int(self.screen.get_size()[0]/5)
         self.y_pos = int(self.screen.get_size()[1]/2)
         if (self.rotation):
