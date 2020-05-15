@@ -9,6 +9,7 @@ pygame.font.init()
 pygame.mixer.pre_init(44100, 16, 2, 4096)
 
 game_icon = pygame.image.load("Resources/Images/Icon.png")
+trophy = pygame.transform.scale(pygame.image.load("Resources/Images/Trophy.png"), (90, 90))
 pygame.display.set_icon(game_icon)
 display_width, display_height = 1280, 720
 screen = pygame.display.set_mode((display_width, display_height))
@@ -38,10 +39,15 @@ HIGHSCORE = 0
 
 player = Player(screen, 25)
 
-# For each difficulty, the following are stored: maximum time table no., speed of the fuel boxes, points gained from each correct answer, and the no. of lives
+# For each difficulty: maximum time table no., speed of  fuel boxes, points gained from each correct answer, and no. of lives
 difficulty = {'easy':[6, 1.01, 5, 3], 'medium': [12, 1.02, 10, 4], 'hard': [16, 1.03, 15, 5]}
 section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
 cloud_speed = (-20, -10)
+
+def leaderboard():
+
+    while True:
+        print()
 
 def level_select():
 
@@ -180,7 +186,10 @@ def main_menu():
                     if (not level_select()):
                         pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
                         pygame.mixer.music.play(-1)
-                if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
+                if 540 + 200 > mouse[0] and mouse[0] > 540 and 400 + 100 > mouse[1] and mouse[1] > 400:
+                    pygame.mixer.Sound.play(button_sound)
+                    leaderboard()
+                if 540 + 200 > mouse[0] and mouse[0] > 540 and 530 + 100 > mouse[1] and mouse[1] > 530:
                     pygame.mixer.Sound.play(button_sound)
                     pygame.quit()
                     sys.exit()
@@ -190,17 +199,22 @@ def main_menu():
         for cloud in clouds: cloud.draw()
         player.move(x_change, y_change)
 
-        display_text("Fuel Run", i_red, 175, (display_width/2, display_height/4.5))
+        display_text("Fuel Run", i_red, 175, (display_width/2, display_height/5))
         
         mouse = pygame.mouse.get_pos()
 
-        btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310
-        pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 310, 240, 120))
-        pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
+        btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 250 + 120 > mouse[1] and mouse[1] > 250
+        pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 250, 240, 120))
+        pygame.draw.polygon(screen, white, ((610, 270), (610, 350), (690, 310)))
 
-        btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500
-        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
-        display_text("Quit", a_blue, 60, (display_width/2, 555))
+        btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 400 + 100 > mouse[1] and mouse[1] > 400
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 400, 200, 100))
+        trophy_size = trophy.get_rect().size
+        screen.blit(trophy, (int(display_width/2 - trophy_size[0]/2), int(450-trophy_size[1]/2)))
+
+        btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 530 + 100 > mouse[1] and mouse[1] > 530
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 530, 200, 100))
+        display_text("Quit", a_blue, 60, (display_width/2 + 5, 590))
         
         display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
         
@@ -242,11 +256,8 @@ def paused():
         pygame.display.update()
         clock.tick(30)
 
-def set_font(size):
-    return pygame.font.Font("Resources/BULKYPIX.ttf", size)
-
 def display_text(text, colour, size, pos, is_centered=True):
-    font = set_font(size)
+    font = pygame.font.Font("Resources/BULKYPIX.ttf", size)
     text_surface = font.render(text, True, colour) #i_red
     disp_pos = pos
     if is_centered:
