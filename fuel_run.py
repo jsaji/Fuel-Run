@@ -45,24 +45,26 @@ difficulty = {'easy':[6, 1.01, 5, 3], 'medium': [12, 1.02, 10, 4], 'hard': [16, 
 section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
 cloud_speed = (-20, -10)
 
-def update_highscores(highscore):
+def update_highscores(name, highscore):
     updated = False
+    entry = name.ljust(30 - len(str(highscore))) + str(highscore)+"\n"
     with open("leaderboard.txt", "r+") as f:
         scores = f.readlines()
         num_scores = len(scores)
         if num_scores == 0:
-            f.write(str(highscore)+"\n")
+            f.write(entry)
             updated = True
         else:
             index = 0
             for index, item in enumerate(scores):
-                if highscore > int(item.strip("\n")):
+                curr_score = int(item.strip("\n").split()[1])
+                if highscore > curr_score:
                     updated = True
                     break
             if not updated and num_scores < 10:
                 index = num_scores
                 updated = True
-            scores.insert(index, str(highscore)+"\n")
+            scores.insert(index, entry)
             num_scores = num_scores + 1
             if num_scores > 10: scores.pop()
             f.seek(0)
@@ -80,7 +82,7 @@ def get_highscores():
 
 def get_highscore():
     try:
-        top_score = int(get_highscores()[0])
+        top_score = int(get_highscores()[0].split()[1])
     except ValueError:
         return 0
     return top_score
@@ -113,11 +115,9 @@ def leaderboard():
 
         display_text("Leaderboard", i_red, 70, (display_width/2, display_height/6))
 
-        #display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
-
-        i = 1
+        i = 0
         for score in scores:
-            display_text(score, i_red, 25, (display_width/2, display_height/5 + 40*i), False)
+            display_text(score, i_red, 40, (display_width/2, display_height/5 + 40 + 50*i))
             i = i + 1
 
         mouse = pygame.mouse.get_pos()
@@ -186,12 +186,17 @@ def level_select():
         clock.tick(30)
             
 def game_over(score):
-    updated = update_highscores(score)
+    global HIGHSCORE
+    if score > HIGHSCORE: text = "New Highscore: "
+    else: text = "Score: "
+    prompt = "Done?"
     pygame.mixer.Sound.play(gameover_sound)
     
     clouds = [Cloud(cloud_speed, 0, section[0][i], screen) for i in range(3)]
     rotation = 1
     player.reset()
+    name = ""
+    name_entered = False
 
     while True:
         for event in pygame.event.get():
@@ -200,31 +205,47 @@ def game_over(score):
                 quit()
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
-                if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
+                if name_entered and 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
                     pygame.mixer.Sound.play(button_sound)
                     return True
-                if 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
-                    pygame.mixer.Sound.play(button_sound)
-                    return False
-        
+                elif 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500:
+                    if name_entered:
+                        pygame.mixer.Sound.play(button_sound)
+                        return False
+                    else:
+                        pygame.mixer.Sound.play(button_sound)
+                        name_entered = True
+                        if not name:
+                            name = "player"
+                        update_highscores(name, score)
+                        prompt = "Home"
+            if not name_entered and event.type == pygame.KEYDOWN:
+                if event.unicode.isalpha() and len(name) < 17:
+                    name += event.unicode
+                elif event.key == pygame.K_BACKSPACE:
+                    name = name[:-1]
+
         screen.fill(s_blue)
 
         for cloud in clouds: cloud.draw()
 
-        if updated:
-            display_text("New Highscore: "+str(score)+"!", i_red, 70, (display_width/2, display_height/4.5))
-        else:
-            display_text("Score: "+str(score)+"!", i_red, 70, (display_width/2, display_height/4.5))
+        display_text(text+str(score)+"!", i_red, 80, (display_width/2, display_height/5))
         
         mouse = pygame.mouse.get_pos()
 
-        btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310
-        pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 310, 240, 120))
-        pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
+        if name_entered:
+            display_text("Well done, " + name, i_red, 50, (display_width/2, display_height/3))
+            btn_hover = 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310
+            pygame.draw.rect(screen, buttonover_green*btn_hover or button_red*(not btn_hover), (520, 310, 240, 120))
+            pygame.draw.polygon(screen, white, ((610, 330), (610, 410), (690, 370)))
+        else:
+            display_text("Enter your name:", i_red, 50, (display_width/2, display_height/3))
+            display_text(name, i_red, 50, (display_width/2, display_height/3 + 70))
 
         btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 500 + 100 > mouse[1] and mouse[1] > 500
         pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 500, 200, 100))
-        display_text("Home", a_blue, 45, (display_width/2, 555))
+        display_text(prompt, a_blue, 45, (display_width/2, 555))
+
         #player.rotate(rotation)
 
         pygame.display.update()
@@ -237,7 +258,7 @@ def main_menu():
     x_change, y_change = 0, 0
     clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
     player.reset()
-    
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
