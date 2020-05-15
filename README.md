@@ -20,7 +20,16 @@ Use **ARROW KEYS** to move the plane:
 Players can move diagonally by holding down one of the keys that allow vertical movement and one of the keys that allow horizontal movement (e.g. holding UP and LEFT will cause players to move left diagonally upwards).
 Hold down keys to move in that direction continuously.
 
+**SPACEBAR** to mix up the plane style (while on the main menu).
+
 ## Version History
+
+### v1.1.0 (15 May 2020)
+
+* A leaderboard to show off your highscores (remains even after closing the game).
+* Cooler clouds in the background.
+* Mix up your plane style by using spacebar while on the main menu.
+* Extensive file & code clean up (no more pointless files, less things going on in the background, better use of OOP).
 
 ### v1.0.1 (3 May 2020)
 
