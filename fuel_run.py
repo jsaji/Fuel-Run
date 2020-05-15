@@ -440,14 +440,14 @@ def game_loop(difficulty_settings):
             trigger = False
             
         hit = -1
+        fuel_gone = False
         for i in range(len(fuel_boxes)):
             fuel_boxes[i].draw()
-            fuel_gone = fuel_boxes[i].check_bounds()
+            fuel_gone = fuel_gone or fuel_boxes[i].check_bounds()
             x, y = fuel_boxes[i].x_pos, fuel_boxes[i].y_pos
             if player.hit_object((x - 110, x + 110), (y - 50, y + 100)):
                 hit = i
 
-        fuel_gone = False
         if(hit+1 or fuel_gone):
             trigger = True
             if hit == answer_section:
