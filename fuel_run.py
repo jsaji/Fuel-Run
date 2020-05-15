@@ -36,6 +36,7 @@ gameover_sound = pygame.mixer.Sound("Resources/Sound/GameOver.wav")
 
 PAUSE = False
 HIGHSCORE = 0
+leaderboard_list = open("leaderboard.txt", "a+")
 
 player = Player(screen, 25)
 
@@ -44,10 +45,65 @@ difficulty = {'easy':[6, 1.01, 5, 3], 'medium': [12, 1.02, 10, 4], 'hard': [16, 
 section = [[(-100, 300), (350, 650), (700, 1000)], [(5, 210), (240, 440), (460, 670)]]
 cloud_speed = (-20, -10)
 
+def update_leaderboard(highscore):
+    with open("leaderboard.txt", "r+") as f:
+        scores = f.readlines()
+        empty = len(scores) == 0
+        if empty:
+            f.write(str(highscore)+"\n")
+        elif not empty and int(scores[0].strip("\n")) < highscore:
+            scores.insert(0, str(highscore)+"\n")
+            if len(scores) > 10: scores.pop()
+            f.seek(0)
+            f.writelines(scores)
+
+def get_leaderboard():
+    with open("leaderboard.txt", "r") as f:
+        scores = f.readlines()
+    return scores
+
 def leaderboard():
 
+    clouds = [Cloud(cloud_speed, 1, section[1][i], screen) for i in range(3)]
+    scores = get_leaderboard()
     while True:
-        print()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                if 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40:
+                    pygame.mixer.Sound.play(button_sound)
+                    return False
+                elif 515 + 250 > mouse[0] and mouse[0] > 515 and 250 + 80 > mouse[1] and mouse[1] > 250:
+                    pygame.mixer.Sound.play(button_sound)
+
+                elif 515 + 250 > mouse[0] and mouse[0] > 515 and 400 + 80 > mouse[1] and mouse[1] > 400:
+                    pygame.mixer.Sound.play(button_sound)
+
+                elif 515 + 250 > mouse[0] and mouse[0] > 515 and 550 + 80 > mouse[1] and mouse[1] > 550:
+                    pygame.mixer.Sound.play(button_sound)
+        screen.fill(s_blue)
+
+        for cloud in clouds: cloud.draw()
+
+        display_text("Leaderboard", i_red, 70, (display_width/2, display_height/6))
+
+        display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
+
+        i = 1
+        for score in scores:
+            display_text(str(score).strip("\n"), i_red, 25, (display_width/2, display_height/5 + 40*i), False)
+            i = i + 1
+
+        mouse = pygame.mouse.get_pos()
+        btn_hover = 40 + 160 > mouse[0] and mouse[0] > 40 and 40 + 60 > mouse[1] and mouse[1] > 40
+        pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (40, 40, 160, 60))
+        display_text("Home", a_blue, 30, (65, 60), False)
+
+        pygame.display.update()
+        clock.tick(30)
 
 def level_select():
 
@@ -181,7 +237,7 @@ def main_menu():
                     y_change = 0
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
-                if 520 + 240 > mouse[0] and mouse[0] > 520 and 310 + 120 > mouse[1] and mouse[1] > 310:
+                if 520 + 240 > mouse[0] and mouse[0] > 520 and 250 + 120 > mouse[1] and mouse[1] > 250:
                     pygame.mixer.Sound.play(button_sound)
                     if (not level_select()):
                         pygame.mixer.music.load("Resources/Sound/Overworld.mp3")
@@ -215,8 +271,6 @@ def main_menu():
         btn_hover = 540 + 200 > mouse[0] and mouse[0] > 540 and 530 + 100 > mouse[1] and mouse[1] > 530
         pygame.draw.rect(screen, csi_blue*btn_hover or button_red*(not btn_hover), (540, 530, 200, 100))
         display_text("Quit", a_blue, 60, (display_width/2 + 5, 590))
-        
-        display_text("High Score: " + str(HIGHSCORE), i_red, 45, (50, 650), False)
         
         pygame.display.update()
         clock.tick(30)
